@@ -6,7 +6,7 @@ android {
     
     compileSdk 33
     defaultConfig {
-        applicationId "ss.colytitse.setappfull"
+        applicationId "moe.lyniko.hiderecent"
         minSdkVersion 27
         targetSdkVersion 33
         versionCode 132

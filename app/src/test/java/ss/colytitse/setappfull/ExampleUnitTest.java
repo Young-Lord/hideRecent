@@ -1,4 +1,4 @@
-package ss.colytitse.setappfull;
+package moe.lyniko.hiderecent;
 
 import org.junit.Test;
 

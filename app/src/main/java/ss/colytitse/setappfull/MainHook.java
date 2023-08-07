@@ -1,4 +1,4 @@
-package ss.colytitse.setappfull;
+package moe.lyniko.hiderecent;
 
 import static android.view.WindowManager.LayoutParams.*;
 import static de.robv.android.xposed.XposedHelpers.*;

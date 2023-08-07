@@ -1,6 +1,6 @@
-package ss.colytitse.setappfull.app;
+package moe.lyniko.hiderecent.app;
 
-import static ss.colytitse.setappfull.app.AppSettings.*;
+import static moe.lyniko.hiderecent.app.AppSettings.*;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -16,7 +16,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import java.util.ArrayList;
 import java.util.List;
-import ss.colytitse.setappfull.R;
+import moe.lyniko.hiderecent.R;
 
 public class AppInfoAdapter extends BaseAdapter {
 

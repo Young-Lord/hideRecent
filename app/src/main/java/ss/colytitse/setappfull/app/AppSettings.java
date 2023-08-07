@@ -1,4 +1,4 @@
-package ss.colytitse.setappfull.app;
+package moe.lyniko.hiderecent.app;
 
 import static android.content.Context.*;
 import android.annotation.SuppressLint;
@@ -9,7 +9,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.view.View;
 import androidx.core.content.ContextCompat;
-import ss.colytitse.setappfull.R;
+import moe.lyniko.hiderecent.R;
 
 @SuppressLint({"ApplySharedPref", "WorldReadableFiles"})
 public class AppSettings {

@@ -1,6 +1,6 @@
-package ss.colytitse.setappfull;
+package moe.lyniko.hiderecent;
 
-import static ss.colytitse.setappfull.app.AppSettings.*;
+import static moe.lyniko.hiderecent.app.AppSettings.*;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Context;
@@ -26,8 +26,8 @@ import androidx.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-import ss.colytitse.setappfull.app.AppInfoAdapter;
-import ss.colytitse.setappfull.app.AppSettings;
+import moe.lyniko.hiderecent.app.AppInfoAdapter;
+import moe.lyniko.hiderecent.app.AppSettings;
 
 @SuppressLint({"UseSwitchCompatOrMaterialCode","UseCompatLoadingForDrawables","SetTextI18n"})
 public class MainActivity extends Activity {
