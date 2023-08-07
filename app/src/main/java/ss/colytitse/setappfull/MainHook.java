@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import androidx.annotation.RequiresApi;
+import com.android.server.wm.Task;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XSharedPreferences;
@@ -32,20 +33,18 @@ public class MainHook implements IXposedHookLoadPackage {
 
     private void onSystemMode(XC_LoadPackage.LoadPackageParam lpparam) {
         XC_MethodHook MethodHook = new XC_MethodHook() {
-            @RequiresApi(api = Build.VERSION_CODES.P)
             @Override
             protected void beforeHookedMethod(MethodHookParam param) {
-                WindowManager.LayoutParams attrs = (WindowManager.LayoutParams) getObjectField(param.args[0], "mAttrs");
-                if (attrs.type > WindowManager.LayoutParams.LAST_APPLICATION_WINDOW)
-                    return;
-                if (SystemMode.contains(attrs.packageName))
-                    attrs.layoutInDisplayCutoutMode = LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+                Task task = (Task) param.args[0];
+                String packageName = task.getBaseIntent().getComponent().getPackageName();
+                if (Mode.contains(attrs.packageName)){
+                    param.setResult(false);
+                }
             }
         };
         try{
-            findAndHookMethod("com.android.server.wm.DisplayPolicy", lpparam.classLoader,
-                    "layoutWindowLw","com.android.server.wm.WindowState",
-                    "com.android.server.wm.WindowState", "com.android.server.wm.DisplayFrames",
+            findAndHookMethod("com.android.server.wm.RecentTasks", lpparam.classLoader,
+                    "isVisibleRecentTask","com.android.server.wm.Task",
                     MethodHook
             );
         }catch (Throwable ignored){}
