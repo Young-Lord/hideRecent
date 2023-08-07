@@ -4,7 +4,7 @@
 
 1. Select `android` in module sscope and activate the module
 2. Select the apps you want to hide from recent app list
-3. Reboot (you MUST reboot when you modify the list, or changes will not be applied)
+3. Reboot (you MUST reboot when you modify the list, or changes will not be applied until next reboot)
 
 ## Module Scope
 
