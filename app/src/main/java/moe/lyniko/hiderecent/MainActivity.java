@@ -87,11 +87,11 @@ public class MainActivity extends Activity {
             TextView app_pkgn = view.findViewById(R.id.app_pkgn);
             String pkgn = app_pkgn.getText().toString();
             LinearLayout item_bac = view.findViewById(R.id.item_root_view);
-            TextView mode_text = view.findViewById(R.id.mode_state);
+//            TextView mode_text = view.findViewById(R.id.mode_state);
             Switch onSwitch = view.findViewById(R.id.set_switch);
             if(!onSwitch.isChecked()){
                 onSwitch.setChecked(true);
-                item_bac.setBackground(mContext.getResources().getDrawable(R.drawable.button_background2, mContext.getTheme()));
+//                item_bac.setBackground(mContext.getResources().getDrawable(R.drawable.button_background2, mContext.getTheme()));
                 saveMode(mContext, pkgn);
             }else {
                 onSwitch.setChecked(false);

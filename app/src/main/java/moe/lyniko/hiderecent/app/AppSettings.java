@@ -11,7 +11,6 @@ import android.view.View;
 import androidx.core.content.ContextCompat;
 import moe.lyniko.hiderecent.R;
 
-@SuppressLint({"ApplySharedPref", "WorldReadableFiles"})
 public class AppSettings {
 
     private static final String TAG = "hide_recent_";
@@ -21,6 +20,7 @@ public class AppSettings {
     public final static int USER_VIEW = 1;
     public final static int MODE = 1;
     public final static int NO_SET = -1;
+    public final static String MODE_STRING_Mode = "Mode";
     private String content;
 
     public static SharedPreferences configData(Context context){
@@ -29,7 +29,7 @@ public class AppSettings {
 
     public static void deleteSelection(Context context, String pkgn){
         SharedPreferences sharedPreferences = configData(context);
-        String Mode = sharedPreferences.getString("Mode", "");
+        String Mode = sharedPreferences.getString(MODE_STRING_Mode, "");
         putMode(sharedPreferences, remove(Mode, pkgn));
     }
 
@@ -40,16 +40,16 @@ public class AppSettings {
     }
 
     private static String getMode(SharedPreferences sharedPreferences){
-        return sharedPreferences.getString("Mode", "");
+        return sharedPreferences.getString(MODE_STRING_Mode, "");
     }
 
     private static void putMode(SharedPreferences sharedPreferences, String content){
-        sharedPreferences.edit().putString("Mode", content).apply();
+        sharedPreferences.edit().putString(MODE_STRING_Mode, content).apply();
     }
 
     public static void saveMode(Context context, String packageName){
         SharedPreferences sharedPreferences = configData(context);
-        String ContentText = sharedPreferences.getString("ode", "");
+        String ContentText = sharedPreferences.getString(MODE_STRING_Mode, "");
         String package_Name = String.format("#%s#", packageName);
         if (ContentText.contains(package_Name)) return;
         ContentText = String.format("%s%s", ContentText, package_Name);
@@ -58,7 +58,7 @@ public class AppSettings {
 
     public static int getSetMode(Context context, String packageName){
         SharedPreferences sharedPreferences = configData(context);
-        String Mode = sharedPreferences.getString("Mode", "");
+        String Mode = sharedPreferences.getString(MODE_STRING_Mode, "");
         String package_Name = String.format("#%s#", packageName);
         if (Mode.contains(package_Name)) return MODE;
         return NO_SET;
