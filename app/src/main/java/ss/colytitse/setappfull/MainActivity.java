@@ -99,34 +99,14 @@ public class MainActivity extends Activity {
             LinearLayout item_bac = view.findViewById(R.id.item_root_view);
             TextView mode_text = view.findViewById(R.id.mode_state);
             Switch onSwitch = view.findViewById(R.id.set_switch);
-            boolean scopeMode = getScopeMode(mContext);
-            if(!onSwitch.isChecked() && !scopeMode){
+            if(!onSwitch.isChecked()){
                 onSwitch.setChecked(true);
                 item_bac.setBackground(mContext.getResources().getDrawable(R.drawable.button_background2, mContext.getTheme()));
-                mode_text.setText(R.string.mode_1);
-                saveTimelyMode(mContext, pkgn);
-                Toast.makeText(mContext,
-                        getResources().getString(R.string.show_message_1),
-                        Toast.LENGTH_SHORT
-                ).show();
-            } else if (getSetMode(mContext, pkgn) == MODE_1 || (scopeMode && !onSwitch.isChecked())){
-                onSwitch.setChecked(true);
-                saveSystemMode(mContext, pkgn);
-                mode_text.setText(R.string.mode_2);
-                item_bac.setBackground(mContext.getResources().getDrawable(R.drawable.button_background3, mContext.getTheme()));
-                Toast.makeText(mContext,
-                        getResources().getString(R.string.show_message),
-                        Toast.LENGTH_SHORT
-                ).show();
+                saveMode(mContext, pkgn);
             }else {
                 onSwitch.setChecked(false);
-                mode_text.setText("");
-                view.findViewById(R.id.item_root_view).setBackground(
-                        mContext.getResources().getDrawable(R.drawable.button_background, mContext.getTheme())
-                );
                 deleteSelection(mContext, pkgn);
             }
-            mode_text.setVisibility(scopeMode ? View.GONE : View.VISIBLE);
         });
     }
 
@@ -195,12 +175,5 @@ public class MainActivity extends Activity {
             if (info.packageName.contains(intext) || getPackageManager().getApplicationLabel(info.applicationInfo).toString().contains(intext))
                 result.add(info);
         return result;
-    }
-
-    public void openSettingsActivity(View view) {
-        Intent intent = new Intent();
-        intent.setClass(mContext, SettingsActivity.class);
-        intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        mContext.startActivity(intent);
     }
 }
