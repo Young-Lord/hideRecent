@@ -4,14 +4,13 @@ plugins {
 
 android {
     
-    compileSdk 32
+    compileSdk 33
     defaultConfig {
         applicationId "ss.colytitse.setappfull"
         minSdkVersion 27
-        //noinspection ExpiredTargetSdkVersion
-        targetSdkVersion 23
+        targetSdkVersion 33
         versionCode 132
-        versionName "beta-1.3.2"
+        versionName "1.0.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -19,7 +18,7 @@ android {
         variant ->
             variant.outputs.all {
                 outputFileName
-                    = "setappfull_${variant.versionName}_${new Date().format("yyMMddHHmm", TimeZone.getTimeZone("GMT+8"))}.apk"
+                    = "hiderecent_${variant.versionName}_${new Date().format("yyMMddHHmm", TimeZone.getTimeZone("GMT+8"))}.apk"
             }
     }
 
