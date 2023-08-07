@@ -19,7 +19,7 @@ public class AppSettings {
     private static final String configFileName = "app_config";
     public final static int SYSTEM_VIEW = 0;
     public final static int USER_VIEW = 1;
-    public final static int MODE_1 = 1;
+    public final static int MODE = 1;
     public final static int NO_SET = -1;
     private String content;
 

@@ -28,7 +28,6 @@ import java.util.List;
 
 import ss.colytitse.setappfull.app.AppInfoAdapter;
 import ss.colytitse.setappfull.app.AppSettings;
-import ss.colytitse.setappfull.app.SettingsActivity;
 
 @SuppressLint({"UseSwitchCompatOrMaterialCode","UseCompatLoadingForDrawables","SetTextI18n"})
 public class MainActivity extends Activity {
@@ -67,15 +66,6 @@ public class MainActivity extends Activity {
     @Override
     protected void onResume() {
         super.onResume();
-        if (getHelloWorld(mContext)) {
-            View decorView = this.getWindow().getDecorView();
-            decorView.post(() -> {
-                Intent intent = new Intent();
-                intent.setClass(mContext, SettingsActivity.class);
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                mContext.startActivity(intent);
-            });
-        }
     }
 
     private void initMainActivity() {

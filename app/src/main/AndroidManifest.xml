@@ -34,8 +34,6 @@
                 <category android:name="de.robv.android.xposed.category.MODULE_SETTINGS"/>
             </intent-filter>
         </activity>
-        <activity android:name=".app.SettingsActivity"
-            android:exported="true"/>
     </application>
 
 </manifest>

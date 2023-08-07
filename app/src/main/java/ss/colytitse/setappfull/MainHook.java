@@ -37,7 +37,7 @@ public class MainHook implements IXposedHookLoadPackage {
             protected void beforeHookedMethod(MethodHookParam param) {
                 Task task = (Task) param.args[0];
                 String packageName = task.getBaseIntent().getComponent().getPackageName();
-                if (Mode.contains(attrs.packageName)){
+                if (Mode.contains(packageName)){
                     param.setResult(false);
                 }
             }
