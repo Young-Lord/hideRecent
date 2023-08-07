@@ -14,13 +14,12 @@ import ss.colytitse.setappfull.R;
 @SuppressLint({"ApplySharedPref", "WorldReadableFiles"})
 public class AppSettings {
 
-    private static final String TAG = "test_";
+    private static final String TAG = "hide_recent_";
     private static final String config_name = "config";
     private static final String configFileName = "app_config";
     public final static int SYSTEM_VIEW = 0;
     public final static int USER_VIEW = 1;
     public final static int MODE_1 = 1;
-    public final static int MODE_2 = 2;
     public final static int NO_SET = -1;
     private String content;
 
@@ -30,8 +29,8 @@ public class AppSettings {
 
     public static void deleteSelection(Context context, String pkgn){
         SharedPreferences sharedPreferences = configData(context);
-        String SystemMode = sharedPreferences.getString("SystemMode", "");
-        putSystemMode(sharedPreferences, remove(SystemMode, pkgn));
+        String Mode = sharedPreferences.getString("Mode", "");
+        putMode(sharedPreferences, remove(Mode, pkgn));
     }
 
     private static String remove(String contentText, String packageName){
@@ -40,46 +39,28 @@ public class AppSettings {
         return contentText.replace(package_Name, "");
     }
 
-    private static String getSystemMode(SharedPreferences sharedPreferences){
-        return sharedPreferences.getString("SystemMode", "");
+    private static String getMode(SharedPreferences sharedPreferences){
+        return sharedPreferences.getString("Mode", "");
     }
 
-    private static String getTimelyMode(SharedPreferences sharedPreferences){
-        return sharedPreferences.getString("TimelyMode", "");
+    private static void putMode(SharedPreferences sharedPreferences, String content){
+        sharedPreferences.edit().putString("Mode", content).apply();
     }
 
-    private static void putTimelyMode(SharedPreferences sharedPreferences, String content){
-        sharedPreferences.edit().putString("TimelyMode", content).apply();
-    }
-
-    private static void putSystemMode(SharedPreferences sharedPreferences, String content){
-        sharedPreferences.edit().putString("SystemMode", content).apply();
-    }
-
-    public static void saveSystemMode(Context context, String packageName){
+    public static void saveMode(Context context, String packageName){
         SharedPreferences sharedPreferences = configData(context);
-        String timelyMode = getTimelyMode(sharedPreferences);
-        String systemMode = getSystemMode(sharedPreferences);
-        putTimelyMode(sharedPreferences, remove(timelyMode, packageName));
-        putSystemMode(sharedPreferences, String.format("%s#%s#", systemMode, packageName));
-    }
-
-    public static void saveTimelyMode(Context context, String packageName){
-        SharedPreferences sharedPreferences = configData(context);
-        String ContentText = sharedPreferences.getString("TimelyMode", "");
+        String ContentText = sharedPreferences.getString("ode", "");
         String package_Name = String.format("#%s#", packageName);
         if (ContentText.contains(package_Name)) return;
         ContentText = String.format("%s%s", ContentText, package_Name);
-        putTimelyMode(sharedPreferences, ContentText);
+        putMode(sharedPreferences, ContentText);
     }
 
     public static int getSetMode(Context context, String packageName){
         SharedPreferences sharedPreferences = configData(context);
-        String SystemMode = sharedPreferences.getString("SystemMode", "");
-        String TimelyMode = sharedPreferences.getString("TimelyMode", "");
+        String Mode = sharedPreferences.getString("Mode", "");
         String package_Name = String.format("#%s#", packageName);
-        if (TimelyMode.contains(package_Name)) return MODE_1;
-        if (SystemMode.contains(package_Name)) return MODE_2;
+        if (Mode.contains(package_Name)) return MODE;
         return NO_SET;
     }
 
@@ -89,22 +70,6 @@ public class AppSettings {
 
     public static void savonSwitch(Context context,int value) {
         configData(context).edit().putInt("onSwitchListView", value).apply();
-    }
-
-    public static void setScopeMode(Context context, boolean scopeMode){
-        configData(context).edit().putBoolean("scope_mode_switch", scopeMode).apply();
-    }
-
-    public static boolean getScopeMode(Context context){
-       return configData(context).getBoolean("scope_mode_switch", true);
-    }
-
-    public static boolean getHelloWorld(Context context){
-        return configData(context).getBoolean("hello_world", true);
-    }
-
-    public static void setHelloWorld(Context context){
-        configData(context).edit().putBoolean("hello_world", false).apply();
     }
 
     public static void setStatusBarColor(Activity activity, int color){

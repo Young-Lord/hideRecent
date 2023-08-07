@@ -20,7 +20,7 @@ import ss.colytitse.setappfull.R;
 
 public class AppInfoAdapter extends BaseAdapter {
 
-    private final static String TAG = "test_";
+    private final static String TAG = "hide_recent_";
 
     private final List<PackageInfo> packageInfo;
     private final Context context;
@@ -81,15 +81,9 @@ public class AppInfoAdapter extends BaseAdapter {
             mode_text.setText("");
             item_bac.setBackground(context.getResources().getDrawable(R.drawable.button_background, context.getTheme()));
         }
-        if (mode == MODE_1){
-            item_bac.setBackground(context.getResources().getDrawable(R.drawable.button_background2, context.getTheme()));
-            mode_text.setText(R.string.mode_1);
-        }
-        if (mode == MODE_2){
+        if (mode == MODE){
             item_bac.setBackground(context.getResources().getDrawable(R.drawable.button_background3, context.getTheme()));
-            mode_text.setText(R.string.mode_2);
         }
-        mode_text.setVisibility(getScopeMode(context) ? View.GONE : View.VISIBLE);
         onSwitch.setClickable(false);
         return view;
     }
