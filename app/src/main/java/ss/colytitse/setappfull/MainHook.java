@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
+import android.content.Intent;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XSharedPreferences;
@@ -33,7 +34,8 @@ public class MainHook implements IXposedHookLoadPackage {
         XC_MethodHook MethodHook = new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) {
-                String packageName = callMethod(param.args[0],"getBaseIntent").getComponent().getPackageName();
+                Intent intent = (Intent) callMethod(param.args[0],"getBaseIntent");
+                String packageName = intent.getComponent().getPackageName();
                 if (Mode.contains(packageName)){
                     param.setResult(false);
                 }
