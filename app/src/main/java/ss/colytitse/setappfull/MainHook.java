@@ -9,7 +9,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
 import androidx.annotation.RequiresApi;
-import com.android.server.wm.Task;
+import android.server.wm.Task;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XSharedPreferences;
