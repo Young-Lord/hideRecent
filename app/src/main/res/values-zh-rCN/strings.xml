@@ -1,9 +1,7 @@
 <resources>
     <string name="app_name">隐藏最近任务</string>
-    <string name="xposeddescription"></string>
-    <string name="this_version"></string>
+    <string name="xposeddescription">从最近任务列表中隐藏特定任务</string>
     <string name="list_system">系统应用</string>
     <string name="list_user">用户应用</string>
     <string name="search_text">搜索…</string>
-    <string name="settings_text">设置</string>
 </resources>

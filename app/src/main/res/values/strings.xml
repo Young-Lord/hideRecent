@@ -1,11 +1,10 @@
 <resources>
     <string name="app_name">HideRecentTask</string>
-    <string name="xposeddescription"></string>
-    <string name="this_version"></string>
+    <string name="xposeddescription">Hide specific apps from recent task list</string>
+    <string name="this_version">1.0.0</string>
     <string name="list_system">SystemApp</string>
     <string name="list_user">UserApp</string>
     <string name="search_text">Search…</string>
-    <string name="settings_text">Settings</string>
     <string-array name="xposedscope">
         <item>android</item>
     </string-array>
