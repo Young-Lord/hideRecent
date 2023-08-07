@@ -8,8 +8,6 @@ import android.os.Build;
 import android.os.Bundle;
 import android.view.View;
 import android.view.WindowManager;
-import androidx.annotation.RequiresApi;
-import android.server.wm.Task;
 import de.robv.android.xposed.IXposedHookLoadPackage;
 import de.robv.android.xposed.XC_MethodHook;
 import de.robv.android.xposed.XSharedPreferences;
@@ -17,7 +15,7 @@ import de.robv.android.xposed.callbacks.XC_LoadPackage;
 
 public class MainHook implements IXposedHookLoadPackage {
 
-    private static final String TAG = "test_";
+    private static final String TAG = "hide_recent_";
     private static final String Mode;
     static {
         XSharedPreferences xsp = new XSharedPreferences(BuildConfig.APPLICATION_ID,"config");
@@ -35,8 +33,7 @@ public class MainHook implements IXposedHookLoadPackage {
         XC_MethodHook MethodHook = new XC_MethodHook() {
             @Override
             protected void beforeHookedMethod(MethodHookParam param) {
-                Task task = (Task) param.args[0];
-                String packageName = task.getBaseIntent().getComponent().getPackageName();
+                String packageName = callMethod(param.args[0],"getBaseIntent").getComponent().getPackageName();
                 if (Mode.contains(packageName)){
                     param.setResult(false);
                 }

@@ -32,7 +32,7 @@ import ss.colytitse.setappfull.app.AppSettings;
 @SuppressLint({"UseSwitchCompatOrMaterialCode","UseCompatLoadingForDrawables","SetTextI18n"})
 public class MainActivity extends Activity {
 
-    private static final String TAG = "test_";
+    private static final String TAG = "hide_recent_";
     private List<PackageInfo> systemAppList;
     private List<PackageInfo> userAppList;
     private boolean EditSearchInit = false;
