@@ -12,6 +12,12 @@
 
 - android
 
+## Project Url
+
+Home URL: <https://github.com/Young-Lord/hideRecent>
+
+Xposed Modules Repo URL: <https://github.com/Xposed-Modules-Repo/moe.lyniko.hiderecent>
+
 ## Credits
 
 original code from: <https://github.com/cokkeijigen/setAppFull>
