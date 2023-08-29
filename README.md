@@ -12,7 +12,7 @@
 
 - android
 
-## Project Url
+## Project URL
 
 Home URL: <https://github.com/Young-Lord/hideRecent>
 
