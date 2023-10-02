@@ -70,13 +70,17 @@ public class MainActivity extends Activity {
 
     private void initMainActivity() {
         int AppViewList = getOnSwitchListView(mContext);
-        TextView setVersionName = findViewById(R.id.version_name);
         TextView appListName = findViewById(R.id.app_list_name);
-        setVersionName.setText(String.format("%s%s",
-                setVersionName.getText().toString().split("->")[0], getVersionName(mContext)));
         appListName.setText(String.format("(%s)",getResources().getString(
                 AppViewList == USER_VIEW ? R.string.list_user : R.string.list_system)));
         initMainActivityListView(AppViewList == USER_VIEW ? userAppList : systemAppList);
+        EditText edit_insearch = findViewById(R.id.edit_insearch);
+        initEditaTextAction(edit_insearch);
+        edit_insearch.setOnEditorActionListener((textView, actionId, keyEvent)
+        -> {
+            ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(textView.getWindowToken(), 0);
+            return true;
+        });
     }
 
     public void initMainActivityListView(List<PackageInfo> appList){
@@ -115,30 +119,6 @@ public class MainActivity extends Activity {
         }
     }
 
-    public void insearch(View view) {
-        EditText edit_insearch = findViewById(R.id.edit_insearch);
-        ImageButton btn_insearch = findViewById(R.id.btn_insearch);
-        initEditaTextAction(edit_insearch);
-        if(edit_insearch.getVisibility() == View.GONE){
-            edit_insearch.setVisibility(View.VISIBLE);
-            btn_insearch.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_close_24, getTheme()));
-            edit_insearch.setOnEditorActionListener((textView, actionId, keyEvent)
-            -> {
-                if (actionId == EditorInfo.IME_ACTION_NEXT) {
-                    ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(view.getWindowToken(), 0);
-                    return true;
-                }
-                return false;
-            });
-            return;
-        }
-        edit_insearch.setVisibility(View.GONE);
-        edit_insearch.setText("");
-        initMainActivityListView(getOnSwitchListView(mContext) == USER_VIEW ? userAppList : systemAppList);
-        ((InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE)).hideSoftInputFromWindow(view.getWindowToken(), 0);
-        btn_insearch.setImageDrawable(getResources().getDrawable(R.drawable.ic_baseline_search_24, getTheme()));
-    }
-
     private void initEditaTextAction(EditText edit_insearch) {
         if (EditSearchInit) return;
         edit_insearch.addTextChangedListener(new TextWatcher() {
@@ -160,9 +140,10 @@ public class MainActivity extends Activity {
     private List<PackageInfo> searchAppView(String intext) {
         List<PackageInfo> appList = getOnSwitchListView(mContext) == USER_VIEW ? userAppList : systemAppList;
         if (intext.length() < 1) return appList;
+        intext = intext.toLowerCase();
         List<PackageInfo> result = new ArrayList<>();
         for (PackageInfo info : appList)
-            if (info.packageName.contains(intext) || getPackageManager().getApplicationLabel(info.applicationInfo).toString().contains(intext))
+            if (info.packageName.toLowerCase().contains(intext) || getPackageManager().getApplicationLabel(info.applicationInfo).toString().toLowerCase().contains(intext))
                 result.add(info);
         return result;
     }
