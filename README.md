@@ -21,3 +21,7 @@ Xposed Modules Repo URL: <https://github.com/Xposed-Modules-Repo/moe.lyniko.hide
 ## Credits
 
 original code from: <https://github.com/cokkeijigen/setAppFull>
+
+## License
+
+[My modification](https://github.com/Young-Lord/hideRecent/blob/master/app/src/main/java/moe/lyniko/hiderecent/MainHook.java#L34-L49) are licensed under WTFPL. You can use them freely.
