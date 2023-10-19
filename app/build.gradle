@@ -7,7 +7,7 @@ android {
     compileSdk 33
     defaultConfig {
         applicationId "moe.lyniko.hiderecent"
-        minSdkVersion 27
+        minSdkVersion 29
         targetSdkVersion 33
         versionCode 133
         versionName "1.1.0"
