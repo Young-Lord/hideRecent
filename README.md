@@ -2,7 +2,7 @@
 
 ## How to use
 
-> Only tested on Android 13 (MIUI 14) and Android 11 (MIUI 12); may work on [Android >= 10](http://aospxref.com/android-10.0.0_r47/xref/frameworks/base/services/core/java/com/android/server/wm/RecentTasks.java#1272)
+> Only tested on Android 13 (MIUI 14) and Android 11 (MIUI 12); may work on [10 <= Android <= 14](http://aospxref.com/android-10.0.0_r47/xref/frameworks/base/services/core/java/com/android/server/wm/RecentTasks.java#1272)
 
 1. Select `android` in module scope and activate the module
 2. Select the apps you want to hide from recent app list
