@@ -5,4 +5,5 @@
     <string name="list_user">用户应用</string>
     <string name="search_text">搜索…</string>
     <string name="switch_app_type">在显示 用户应用/系统应用 间切换。</string>
+    <string name="not_activated">请先激活本模块。</string>
 </resources>

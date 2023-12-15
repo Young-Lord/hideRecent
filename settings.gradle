@@ -3,7 +3,8 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
-        jcenter() // Warning: this repository is going to shut down soon
+        maven { url 'https://jcenter.bintray.com' }
+        // jcenter() // Warning: this repository is going to shut down soon
     }
 }
 rootProject.name = "hideRecent"

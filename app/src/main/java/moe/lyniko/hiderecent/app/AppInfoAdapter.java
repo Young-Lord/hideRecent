@@ -1,6 +1,7 @@
 package moe.lyniko.hiderecent.app;
 
 import static moe.lyniko.hiderecent.app.AppSettings.*;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageInfo;
@@ -14,8 +15,10 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Switch;
 import android.widget.TextView;
+
 import java.util.ArrayList;
 import java.util.List;
+
 import moe.lyniko.hiderecent.R;
 
 public class AppInfoAdapter extends BaseAdapter {
@@ -24,17 +27,18 @@ public class AppInfoAdapter extends BaseAdapter {
 
     private final List<PackageInfo> packageInfo;
     private final Context context;
+
     public AppInfoAdapter(List<PackageInfo> packageInfo, Context context) {
         this.context = context;
         this.packageInfo = sortOnSwitchList(packageInfo);
     }
 
-    private List<PackageInfo> sortOnSwitchList(List<PackageInfo> appList){
+    private List<PackageInfo> sortOnSwitchList(List<PackageInfo> appList) {
         List<PackageInfo> onSwitch = new ArrayList<>();
         List<PackageInfo> offSwitch = new ArrayList<>();
         List<PackageInfo> allSwitchStatus = new ArrayList<>();
-        for (PackageInfo info: appList){
-            if(getSetMode(context, info.packageName) != NO_SET)
+        for (PackageInfo info : appList) {
+            if (getSetMode(context, info.packageName) != NO_SET)
                 onSwitch.add(info);
             else offSwitch.add(info);
         }
@@ -81,14 +85,14 @@ public class AppInfoAdapter extends BaseAdapter {
             mode_text.setText("");
             item_bac.setBackground(context.getResources().getDrawable(R.drawable.button_background, context.getTheme()));
         }
-        if (mode == MODE){
+        if (mode == MODE) {
             item_bac.setBackground(context.getResources().getDrawable(R.drawable.button_background3, context.getTheme()));
         }
         onSwitch.setClickable(false);
         return view;
     }
 
-    static public class AppInfo{
+    static public class AppInfo {
         private final PackageInfo packageInfo;
         private final Context context;
 
@@ -97,23 +101,23 @@ public class AppInfoAdapter extends BaseAdapter {
             this.context = context;
         }
 
-        public String getPackageName(){
+        public String getPackageName() {
             return packageInfo.packageName;
         }
 
-        public String getAppName(){
+        public String getAppName() {
             return packageInfo.applicationInfo.loadLabel(context.getPackageManager()).toString();
         }
 
-        public String getVersionName(){
+        public String getVersionName() {
             return packageInfo.versionName;
         }
 
-        public int getVersionCode(){
+        public int getVersionCode() {
             return packageInfo.versionCode;
         }
 
-        public Drawable getAppIcon(){
+        public Drawable getAppIcon() {
             return packageInfo.applicationInfo.loadIcon(context.getPackageManager());
         }
 
