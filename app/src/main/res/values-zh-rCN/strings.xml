@@ -16,4 +16,5 @@
     <string name="show_package_for_all_user">显示来自所有用户的应用</string>
     <string name="show_package_for_all_user_summary">需要 Shizuku 或 Sui。重启应用生效。</string>
     <string name="hide_icon_in_launcher">从启动器（桌面）隐藏此模块</string>
+    <string name="dismiss_notification">忽略</string>
 </resources>

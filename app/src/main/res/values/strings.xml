@@ -19,4 +19,5 @@
     <string name="show_package_for_all_user">Show applications of all users.</string>
     <string name="show_package_for_all_user_summary">Require Shizuku / Sui to work. Restart module after changing this.</string>
     <string name="hide_icon_in_launcher">Hide module in launcher.</string>
+    <string name="dismiss_notification">DISMISS</string>
 </resources>

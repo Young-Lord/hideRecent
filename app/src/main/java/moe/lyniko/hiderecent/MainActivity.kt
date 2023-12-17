@@ -68,7 +68,7 @@ class MainActivity : ComponentActivity() {
                         scope.launch {
                             snackbarHostState.showSnackbar(
                                 getString(R.string.main_user_only, userId),
-                                actionLabel = "Ignore",
+                                actionLabel = getString(R.string.dismiss_notification),
                                 duration = SnackbarDuration.Indefinite
                             )
                         }
@@ -82,7 +82,7 @@ class MainActivity : ComponentActivity() {
                         scope.launch {
                             snackbarHostState.showSnackbar(
                                 getString(R.string.shizuku_not_available_toast),
-                                actionLabel = "Ignore",
+                                actionLabel = getString(R.string.dismiss_notification),
                                 duration = SnackbarDuration.Indefinite
                             )
                         }
