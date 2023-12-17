@@ -1,3 +1,4 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">隐藏最近任务</string>
     <string name="xposeddescription">从最近任务列表中隐藏特定任务</string>
@@ -6,4 +7,13 @@
     <string name="search_text">搜索…</string>
     <string name="switch_app_type">在显示 用户应用/系统应用 间切换。</string>
     <string name="not_activated">请先激活本模块。</string>
+    <string name="title_home">主页</string>
+    <string name="title_settings">设置</string>
+    <string name="title_about">关于</string>
+    <string name="clear_search">清除搜索框</string>
+    <string name="main_user_only">此模块仅能在主用户（用户0）中使用。当前用户为$1%d。</string>
+    <string name="shizuku_not_available_toast">Shizuku / Sui 未运行，仅显示当前用户的应用。</string>
+    <string name="show_package_for_all_user">显示来自所有用户的应用</string>
+    <string name="show_package_for_all_user_summary">需要 Shizuku 或 Sui。重启应用生效。</string>
+    <string name="hide_icon_in_launcher">从启动器（桌面）隐藏此模块</string>
 </resources>
