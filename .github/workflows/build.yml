@@ -42,3 +42,9 @@ jobs:
         with:
           name: my-build-apk
           path: app/build/outputs/apk
+
+      - name: Upload mapping
+        uses: actions/upload-artifact@v3
+        with:
+          name: mapping
+          path: app/build/outputs/mapping
