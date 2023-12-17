@@ -55,7 +55,7 @@ class AppUtils(
 
     private val appsWithoutDuplicatePackageName: List<PackageInfo> by lazy {
         // get all the apps
-        var result = ArrayList<PackageInfo>()
+        val result = ArrayList<PackageInfo>()
         apps.forEach {
             if (result.find { pkg -> pkg.packageName == it.packageName } == null) {
                 result.add(it)
