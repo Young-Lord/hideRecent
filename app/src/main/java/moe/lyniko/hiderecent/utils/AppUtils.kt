@@ -19,7 +19,7 @@ class AppUtils(
             PreferenceUtils(context).managerPref.getBoolean(
                 PreferenceUtils.Companion.ConfigKeys.ShowPackageForAllUser.key,
                 false
-            )
+            ) and isShizukuAvailable()
         ) appForAllUser else appForSingleUser
     }
 
