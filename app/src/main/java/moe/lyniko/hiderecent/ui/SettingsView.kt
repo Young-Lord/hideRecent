@@ -39,9 +39,11 @@ fun SettingsView() {
                 SwitchPreference(
                     value = switchMutableState,
                     onValueChange = {
-                        switchMutableState = it; managerPref.edit()
+                        switchMutableState = it
+                        managerPref.edit()
                         .putBoolean(ConfigKeys.ShowPackageForAllUser.key, it)
-                        .apply(); isShizukuAvailable()
+                        .apply()
+                        if(it) isShizukuAvailable()
                     },
                     title = { Text(context.getString(R.string.show_package_for_all_user)) },
                     summary = { Text(context.getString(R.string.show_package_for_all_user_summary)) },

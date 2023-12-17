@@ -19,7 +19,7 @@ class AppUtils(
             PreferenceUtils(context).managerPref.getBoolean(
                 PreferenceUtils.Companion.ConfigKeys.ShowPackageForAllUser.key,
                 false
-            ) and isShizukuAvailable()
+            ) && isShizukuAvailable()
         ) appForAllUser else appForSingleUser
     }
 
@@ -94,7 +94,7 @@ class ParsedPackage(
         pkg.longVersionCode
     }
     val isSystemApp: Boolean by lazy {
-        pkg.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_SYSTEM != 0
+        (pkg.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_SYSTEM) != 0
     }
     private val packageNameLowerCase: String by lazy {
         packageName.lowercase()
