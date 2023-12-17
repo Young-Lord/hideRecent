@@ -13,7 +13,7 @@ class PreferenceUtils( // init context on constructor
         @Suppress("DEPRECATION")
         context.getSharedPreferences(functionalConfigName, Context.MODE_WORLD_READABLE)
     } catch (e: SecurityException) {
-        if(false){ // TODO: remove this catch
+        if(true){ // TODO: remove this catch. This is for developing on Android Emulator.
             throw e
         }
         Log.w("PreferenceUtil", "Fallback to Private SharedPref for error!!!: ${e.message}")
