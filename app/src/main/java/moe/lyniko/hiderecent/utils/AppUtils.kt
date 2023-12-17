@@ -31,7 +31,12 @@ class AppUtils(
         val users = getUserProfiles(context)
         val apps = ArrayList<PackageInfo>()
         for (user in users) {
-            apps.addAll(getInstalledPackagesAsUser(PackageManager.GET_META_DATA, getIdByUserHandle(user)))
+            apps.addAll(
+                getInstalledPackagesAsUser(
+                    PackageManager.GET_META_DATA,
+                    getIdByUserHandle(user)
+                )
+            )
         }
         apps
     }
@@ -48,15 +53,26 @@ class AppUtils(
         }.list
     }
 
+    private val appsWithoutDuplicatePackageName: List<PackageInfo> by lazy {
+        // get all the apps
+        var result = ArrayList<PackageInfo>()
+        apps.forEach {
+            if (result.find { pkg -> pkg.packageName == it.packageName } == null) {
+                result.add(it)
+            }
+        }
+        result
+    }
+
     val parsedApps: List<ParsedPackage> by lazy {
-        apps.map { ParsedPackage(it, packageManager) }
+        appsWithoutDuplicatePackageName.map { ParsedPackage(it, packageManager) }
     }
 }
 
 class ParsedPackage(
     private val pkg: PackageInfo,
     private val packageManager: PackageManager
-){
+) {
     // lazy init
     val appName: String by lazy {
         packageManager.getApplicationLabel(pkg.applicationInfo).toString()
@@ -67,10 +83,12 @@ class ParsedPackage(
     val packageName: String by lazy {
         pkg.packageName
     }
+
     @Suppress("unused")
     val versionName: String by lazy {
         pkg.versionName
     }
+
     @Suppress("unused")
     val versionCode: Long by lazy {
         pkg.longVersionCode
@@ -84,7 +102,10 @@ class ParsedPackage(
     private val appNameLowerCase: String by lazy {
         appName.lowercase()
     }
+
     fun isLowerCasedSearchMatch(searchContent: String): Boolean {
-        return packageNameLowerCase.contains(searchContent) || appNameLowerCase.contains(searchContent)
+        return packageNameLowerCase.contains(searchContent) || appNameLowerCase.contains(
+            searchContent
+        )
     }
 }
