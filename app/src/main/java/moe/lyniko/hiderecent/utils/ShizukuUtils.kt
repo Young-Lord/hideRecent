@@ -16,11 +16,11 @@ val iPackageManager: IPackageManager by lazy {
 }
 
 fun isShizukuAvailable(): Boolean {
-    if (Shizuku.isPreV11()) {
-        return false
-    }
     try {
         Shizuku.pingBinder()
+        if (Shizuku.isPreV11()) {
+            return false
+        }
         Shizuku.checkSelfPermission()
     } catch (e: IllegalStateException) {
         return false

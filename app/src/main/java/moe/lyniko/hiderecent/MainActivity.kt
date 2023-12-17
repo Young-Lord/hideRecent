@@ -26,6 +26,7 @@ import moe.lyniko.hiderecent.utils.PreferenceUtils
 import moe.lyniko.hiderecent.utils.getIdByUserHandle
 import moe.lyniko.hiderecent.utils.isShizukuAvailable
 import moe.lyniko.hiderecent.utils.isShizukuNeeded
+import kotlin.system.exitProcess
 
 
 class MainActivity : ComponentActivity() {
@@ -38,6 +39,7 @@ class MainActivity : ComponentActivity() {
         } catch (e: SecurityException) {
             Toast.makeText(this, getString(R.string.not_activated), Toast.LENGTH_LONG).show()
             finish()
+            exitProcess(0)
             return
         }
         setContent {
