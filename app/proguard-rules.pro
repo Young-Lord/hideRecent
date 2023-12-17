@@ -20,3 +20,5 @@
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
 -keep class moe.lyniko.hiderecent.MainHook
+# -keep class rikka.shizuku.SystemServiceHelper
+-keep class android.** { *; }
