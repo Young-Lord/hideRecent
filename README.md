@@ -1,5 +1,9 @@
 # Hide App from Recent Task List
 
+Simple module to hide any app from recent task list.
+
+Designed in pure Kotlin & Jetpack Compose & Material Design 3. Can be a template for any Xposed module with a application selection list.
+
 ## How to use
 
 > Only tested on Android 13 (MIUI 14) and Android 11 (MIUI 12); may work on [10 <= Android <= 14](http://aospxref.com/android-10.0.0_r47/xref/frameworks/base/services/core/java/com/android/server/wm/RecentTasks.java#1272)
@@ -42,3 +46,13 @@ Apache-2.0 License or MIT License are all OK.
 <https://github.com/LibChecker/LibChecker/pull/821/files> (Apache-2.0 license)
 
 ~~Original code from: <https://github.com/cokkeijigen/setAppFull>~~ refactored.
+
+## Why?
+
+出于隐私或便捷原因，有些时候我们总是想隐藏一些应用。
+
+CrDroid 内置了这个功能，这是好的，然而并不是所有人都在用 CrDroid。
+
+而且，国内的 ROM 的“最近任务列表”里划掉一个卡片，就等于杀死这个应用，这是非常蠢的！你也不想你的 Clash For Android 编辑完配置就挂了吧？
+
+Thanox 等一些应用也有这个功能，但为了这个功能氪金并装一个闭源应用，怎么看都很蠢。于是我买了 Thanox 订阅，然后写完这个模块后又卖了。
