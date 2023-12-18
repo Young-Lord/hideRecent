@@ -1,19 +1,10 @@
 package moe.lyniko.hiderecent.utils
 
 import android.content.Context
-import android.content.pm.IPackageManager
 import android.content.pm.PackageManager
 import rikka.shizuku.Shizuku
-import rikka.shizuku.ShizukuBinderWrapper
-import rikka.shizuku.SystemServiceHelper
 
 
-// https://github.com/LibChecker/LibChecker/pull/821/files
-val iPackageManager: IPackageManager by lazy {
-    IPackageManager.Stub.asInterface(
-        ShizukuBinderWrapper(SystemServiceHelper.getSystemService("package"))
-    )
-}
 
 fun isShizukuAvailable(): Boolean {
     try {
@@ -36,6 +27,7 @@ fun isShizukuAvailable(): Boolean {
             Shizuku.requestPermission((Int.MIN_VALUE..Int.MAX_VALUE).random())
         } catch (e: IllegalStateException) {
             // Shizuku not installed
+            @Suppress("UNUSED_EXPRESSION")
             false
         }
         false

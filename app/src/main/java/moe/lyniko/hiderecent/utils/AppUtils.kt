@@ -1,10 +1,15 @@
 package moe.lyniko.hiderecent.utils
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageInfo
 import android.content.pm.PackageManager
 import android.graphics.drawable.Drawable
 import android.os.Build
+import android.os.IBinder
+import org.lsposed.hiddenapibypass.HiddenApiBypass
+import rikka.shizuku.ShizukuBinderWrapper
+import rikka.shizuku.SystemServiceHelper
 
 class AppUtils(
     context: Context
@@ -45,12 +50,42 @@ class AppUtils(
         return Build.VERSION.SDK_INT >= 33
     }
 
-    private fun getInstalledPackagesAsUser(flags: Int, userId: Int): List<PackageInfo> {
-        return if (atLeastT()) {
-            iPackageManager.getInstalledPackages(flags.toLong(), userId)
+    @SuppressLint("PrivateApi")
+    private fun getInstalledPackagesAsUser(@Suppress("SameParameterValue") flags: Int, userId: Int): List<PackageInfo> {
+        // fuck android.
+        // https://www.xda-developers.com/implementing-shizuku/
+        // val iPmClass = Class.forName("android.content.pm.IPackageManager")
+        val iPmStub = Class.forName("android.content.pm.IPackageManager\$Stub")
+        val asInterfaceMethod = iPmStub.getMethod("asInterface", IBinder::class.java)
+        val iPmInstance = asInterfaceMethod.invoke(
+            null,
+            ShizukuBinderWrapper(SystemServiceHelper.getSystemService("package"))
+        )
+        val iParceledListSliceClass = Class.forName("android.content.pm.ParceledListSlice")
+        val retAsInner: Any
+        if (atLeastT()) {
+            retAsInner = HiddenApiBypass.invoke(
+                iPmInstance::class.java,
+                iPmInstance,
+                "getInstalledPackages",
+                flags.toLong(),
+                userId
+            )
         } else {
-            iPackageManager.getInstalledPackages(flags, userId)
-        }.list
+            retAsInner = HiddenApiBypass.invoke(
+                iPmInstance::class.java,
+                iPmInstance,
+                "getInstalledPackages",
+                flags,
+                userId
+            )
+        }
+        @Suppress("UNCHECKED_CAST")
+        return HiddenApiBypass.invoke(
+            iParceledListSliceClass,
+            retAsInner,
+            "getList"
+        ) as List<PackageInfo>
     }
 
     private val appsWithoutDuplicatePackageName: List<PackageInfo> by lazy {

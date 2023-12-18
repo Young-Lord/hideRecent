@@ -39,7 +39,6 @@ class MainActivity : ComponentActivity() {
         } catch (e: SecurityException) {
             Toast.makeText(this, getString(R.string.not_activated), Toast.LENGTH_LONG).show()
             finish()
-            exitProcess(0)
             return
         }
         setContent {
