@@ -54,6 +54,7 @@ class AppUtils(
     private fun getInstalledPackagesAsUser(@Suppress("SameParameterValue") flags: Int, userId: Int): List<PackageInfo> {
         // fuck android.
         // https://www.xda-developers.com/implementing-shizuku/
+        // Previous version: https://github.com/Young-Lord/hideRecent/commit/8f956002e1edbb95e2e3e945c28ec1a716596347
         // val iPmClass = Class.forName("android.content.pm.IPackageManager")
         val iPmStub = Class.forName("android.content.pm.IPackageManager\$Stub")
         val asInterfaceMethod = iPmStub.getMethod("asInterface", IBinder::class.java)

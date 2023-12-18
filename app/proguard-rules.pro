@@ -21,4 +21,4 @@
 #-renamesourcefileattribute SourceFile
 -keep class moe.lyniko.hiderecent.MainHook
 # -keep class rikka.shizuku.SystemServiceHelper
--keep class android.** { *; }
+# -keep class android.** { *; }
