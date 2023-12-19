@@ -20,4 +20,17 @@
     <string name="show_package_for_all_user_summary">Require Shizuku / Sui to work. Restart module after changing this.</string>
     <string name="hide_icon_in_launcher">Hide module in launcher.</string>
     <string name="dismiss_notification">DISMISS</string>
+    <string name="import_config">Import Config from Clipboard</string>
+    <string name="export_config">Export Config to Clipboard</string>
+    <string name="export_config_to_clipboard_success">Config exported to clipboard.</string>
+    <string name="export_config_to_clipboard_failed">Failed to export config to clipboard. Please check your permission.</string>
+    <string name="import_config_failed_empty">Failed. Clipboard is empty.</string>
+    <string name="import_config_failed_perm">Failed. Please check your permission.</string>
+    <string name="import_config_failed_wrong">Failed. Wrong config format.</string>
+    <string name="import_config_success">Config imported.</string>
+    <string name="export_uncomment_hint">uncomment this line to reset before importing</string>
+    <plurals name="import_config_success_count">
+        <item quantity="one">%1$d config entry changed.</item>
+        <item quantity="other">%1$d config entries changed.</item>
+    </plurals>
 </resources>

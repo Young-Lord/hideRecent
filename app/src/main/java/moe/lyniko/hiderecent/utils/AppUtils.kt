@@ -23,7 +23,7 @@ class AppUtils(
     private val allApps: List<PackageInfo> by lazy {
         // get all the apps
         if (
-            PreferenceUtils(context).managerPref.getBoolean(
+            PreferenceUtils.getInstance(context).managerPref.getBoolean(
                 ConfigKeys.ShowPackageForAllUser.key,
                 false
             ) && isShizukuAvailable()

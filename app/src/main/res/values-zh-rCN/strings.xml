@@ -17,4 +17,16 @@
     <string name="show_package_for_all_user_summary">需要 Shizuku 或 Sui。重启应用生效。</string>
     <string name="hide_icon_in_launcher">从启动器（桌面）隐藏此模块</string>
     <string name="dismiss_notification">忽略</string>
+    <string name="import_config">导入配置至剪贴板</string>
+    <string name="export_config">导出配置至剪贴板</string>
+    <string name="export_config_to_clipboard_success">配置已导出至剪贴板。</string>
+    <string name="export_config_to_clipboard_failed">无法导出配置至剪贴板。请检查你是否给予了对应权限。</string>
+    <string name="import_config_failed_empty">导入配置失败。（剪贴板为空）</string>
+    <string name="import_config_failed_perm">导入配置失败。请检查你是否给予了对应权限。</string>
+    <string name="import_config_failed_wrong">导入配置失败。配置内容格式有误。</string>
+    <string name="import_config_success">导入配置成功。</string>
+    <string name="export_uncomment_hint">导入配置前，删掉此行的首个#以重置已有配置</string>
+    <plurals name="import_config_success_count">
+        <item quantity="other">成功更改 %1$d 条配置。</item>
+    </plurals>
 </resources>

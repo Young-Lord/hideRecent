@@ -74,7 +74,7 @@ private var snackbarHostState = SnackbarHostState()
 fun HomeView() {
     val context = LocalContext.current
     appUtils = AppUtils(context)
-    preferenceUtils = PreferenceUtils(context)
+    preferenceUtils = PreferenceUtils.getInstance(context)
     MyApplicationTheme {
         var searchContentRemember by remember { searchContent }
         var showUserAppInsteadOfSystemRemember by remember { showUserAppInsteadOfSystem }
