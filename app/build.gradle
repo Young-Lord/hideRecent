@@ -11,8 +11,8 @@ android {
         applicationId "moe.lyniko.hiderecent"
         minSdk 29
         targetSdk 34
-        versionCode 136
-        versionName "1.2.6"
+        versionCode 200
+        versionName "2.0.0"
     }
 
     buildTypes {
