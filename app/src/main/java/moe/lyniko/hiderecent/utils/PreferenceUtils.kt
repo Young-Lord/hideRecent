@@ -49,6 +49,7 @@ class PreferenceUtils( // init context on constructor
     }
 
     fun isPackageInList(pkg: String): Boolean {
+        Log.w("PreferenceUtil", "isPackageInList: $pkg -> ${packages.contains(pkg)}")
         return packages.contains(pkg)
     }
 }

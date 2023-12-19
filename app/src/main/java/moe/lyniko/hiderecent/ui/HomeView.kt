@@ -139,7 +139,7 @@ fun HomeView() {
                 )
             },
         ) { innerPadding ->
-            AppListForPackages(getFilteredApps(), modifier = Modifier.padding(innerPadding))
+            AppListForPackages(getDisplayApps(), modifier = Modifier.padding(innerPadding))
         }
 
         // check main user
@@ -155,7 +155,7 @@ fun HomeView() {
                 scope.launch {
                     snackbarHostState.showSnackbar(
                         context.getString(R.string.main_user_only, userId),
-                        actionLabel = "Ignore",
+                        actionLabel = context.getString(R.string.dismiss_notification),
                         duration = SnackbarDuration.Indefinite
                     )
                 }
@@ -168,13 +168,17 @@ fun HomeView() {
     }
 }
 
-private fun getFilteredApps(): List<ParsedPackage> {
-    val appsFiltered =
+private fun getDisplayApps(): List<ParsedPackage> {
+    var appsFiltered =
         appUtils.parsedApps.filter { showUserAppInsteadOfSystem.value xor it.isSystemApp }
     val trimmedLowerCasedSearch = searchContent.value.trim().lowercase()
-    return if (trimmedLowerCasedSearch.length <= 1) {
+    appsFiltered = if (trimmedLowerCasedSearch.length <= 1) {
         appsFiltered
     } else appsFiltered.filter { it.isLowerCasedSearchMatch(trimmedLowerCasedSearch) }
+    // sort by app name and package name
+    appsFiltered = appsFiltered.sortedWith(compareByDescending<ParsedPackage> { preferenceUtils.isPackageInList(it.packageName) }.thenBy { it.appName }.thenBy { it.packageName })
+    // appsFiltered = appsFiltered.sortedBy { it.packageName }.sortedBy { it.appName }.sortedBy{ !preferenceUtils.isPackageInList(it.packageName) }
+    return appsFiltered
 }
 
 // https://jetpackcompose.cn/docs/tutorial/
@@ -229,7 +233,10 @@ private fun AppListForPackages(apps: List<ParsedPackage>, modifier: Modifier = M
             .fillMaxWidth(),
     ) {
         LazyColumn {
-            items(apps.size) { app_index ->
+            items(
+                count = apps.size,
+                key = { app_index -> apps[app_index].packageName }
+            ) { app_index ->
                 SingleAppCardForPackage(apps[app_index])
             }
         }

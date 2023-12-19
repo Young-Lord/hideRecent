@@ -10,26 +10,28 @@ import android.os.IBinder
 import org.lsposed.hiddenapibypass.HiddenApiBypass
 import rikka.shizuku.ShizukuBinderWrapper
 import rikka.shizuku.SystemServiceHelper
+import moe.lyniko.hiderecent.utils.PreferenceUtils.Companion.ConfigKeys
 
 class AppUtils(
     context: Context
 ) {
     // the package manager
     private val packageManager: PackageManager = context.packageManager
+    private val getInstalledPackagesFlags: Int = PackageManager.GET_ACTIVITIES or PackageManager.GET_META_DATA
 
     // a list for all the apps, lazy init
-    private val apps: List<PackageInfo> by lazy {
+    private val allApps: List<PackageInfo> by lazy {
         // get all the apps
         if (
             PreferenceUtils(context).managerPref.getBoolean(
-                PreferenceUtils.Companion.ConfigKeys.ShowPackageForAllUser.key,
+                ConfigKeys.ShowPackageForAllUser.key,
                 false
             ) && isShizukuAvailable()
         ) appForAllUser else appForSingleUser
     }
 
     private val appForSingleUser: List<PackageInfo> by lazy {
-        packageManager.getInstalledPackages(PackageManager.GET_META_DATA)
+        packageManager.getInstalledPackages(getInstalledPackagesFlags)
     }
 
     private val appForAllUser: List<PackageInfo> by lazy {
@@ -38,7 +40,7 @@ class AppUtils(
         for (user in users) {
             apps.addAll(
                 getInstalledPackagesAsUser(
-                    PackageManager.GET_META_DATA,
+                    getInstalledPackagesFlags,
                     getIdByUserHandle(user)
                 )
             )
@@ -89,11 +91,12 @@ class AppUtils(
         ) as List<PackageInfo>
     }
 
-    private val appsWithoutDuplicatePackageName: List<PackageInfo> by lazy {
+    private val appsFiltered: List<PackageInfo> by lazy {
         // get all the apps
         val result = ArrayList<PackageInfo>()
-        apps.forEach {
-            if (result.find { pkg -> pkg.packageName == it.packageName } == null) {
+        allApps.forEach {
+            if (result.find { pkg -> pkg.packageName == it.packageName } == null && ! it.activities.isNullOrEmpty()) {
+                // filter for multi-user and filter those without activities
                 result.add(it)
             }
         }
@@ -101,7 +104,7 @@ class AppUtils(
     }
 
     val parsedApps: List<ParsedPackage> by lazy {
-        appsWithoutDuplicatePackageName.map { ParsedPackage(it, packageManager) }
+        appsFiltered.map { ParsedPackage(it, packageManager) }
     }
 }
 

@@ -47,12 +47,14 @@ Apache-2.0 License or MIT License are all OK.
 
 ~~Original code from: <https://github.com/cokkeijigen/setAppFull>~~ refactored.
 
+[rootAVD](https://gitlab.com/newbit/rootAVD)
+
 ## Why?
 
 出于隐私或便捷原因，有些时候我们总是想隐藏一些应用。
 
 CrDroid 内置了这个功能，这是好的，然而并不是所有人都在用 CrDroid。
 
-而且，国内的 ROM 的“最近任务列表”里划掉一个卡片，就等于杀死这个应用，这是非常蠢的！你也不想你的 Clash For Android 编辑完配置就挂了吧？
+而且，国内的 ROM 的“最近任务列表”里划掉一个卡片，就等于杀死这个应用，这太蠢了！你也不想你的 Clash For Android 编辑完配置就挂了吧？
 
-Thanox 等一些应用也有这个功能，但为了这个功能氪金并装一个闭源应用，怎么看都很蠢。于是我买了 Thanox 订阅，然后写完这个模块后又卖了。
+Thanox 等一些应用也有这个功能，但只为了这个功能氪金并装一个闭源应用，怎么看都很怪。于是我买了 Thanox 订阅，然后写完这个模块后又卖了。

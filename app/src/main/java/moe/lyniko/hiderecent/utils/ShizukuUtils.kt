@@ -3,6 +3,7 @@ package moe.lyniko.hiderecent.utils
 import android.content.Context
 import android.content.pm.PackageManager
 import rikka.shizuku.Shizuku
+import moe.lyniko.hiderecent.utils.PreferenceUtils.Companion.ConfigKeys
 
 
 
@@ -36,7 +37,7 @@ fun isShizukuAvailable(): Boolean {
 
 fun isShizukuNeeded(context: Context): Boolean {
     return PreferenceUtils(context).managerPref.getBoolean(
-        PreferenceUtils.Companion.ConfigKeys.ShowPackageForAllUser.key,
+        ConfigKeys.ShowPackageForAllUser.key,
         false
     )
 }
