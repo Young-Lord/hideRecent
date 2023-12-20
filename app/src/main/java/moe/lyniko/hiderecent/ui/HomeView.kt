@@ -73,7 +73,7 @@ private var snackbarHostState = SnackbarHostState()
 @Composable
 fun HomeView() {
     val context = LocalContext.current
-    appUtils = AppUtils(context)
+    appUtils = AppUtils.getInstance(context)
     preferenceUtils = PreferenceUtils.getInstance(context)
     MyApplicationTheme {
         var searchContentRemember by remember { searchContent }

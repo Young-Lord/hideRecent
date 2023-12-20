@@ -15,6 +15,16 @@ import moe.lyniko.hiderecent.utils.PreferenceUtils.Companion.ConfigKeys
 class AppUtils(
     context: Context
 ) {
+    companion object {
+
+        @Volatile
+        private var instance: AppUtils? = null
+
+        fun getInstance(context: Context) =
+            instance ?: synchronized(this) {
+                instance ?: AppUtils(context).also { instance = it }
+            }
+    }
     // the package manager
     private val packageManager: PackageManager = context.packageManager
     private val getInstalledPackagesFlags: Int = PackageManager.GET_ACTIVITIES or PackageManager.GET_META_DATA
