@@ -6,7 +6,7 @@
     <string name="list_user">UserApp</string>
     <string name="search_text">Search…</string>
     <string name="switch_app_type">Switch display of user / system apps.</string>
-    <string name="not_activated">Please activate this module in LSPosed Manager.</string>
+    <string name="not_activated">Please activate this module in LSPosed Manager, then force stop.</string>
     <string-array name="xposedscope" translatable="false">
         <item>android</item>
     </string-array>
