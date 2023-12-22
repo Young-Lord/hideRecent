@@ -7,10 +7,9 @@ import de.robv.android.xposed.XSharedPreferences
 import de.robv.android.xposed.XposedHelpers.callMethod
 import de.robv.android.xposed.XposedHelpers.findAndHookMethod
 import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
+import de.robv.android.xposed.XposedBridge
 import moe.lyniko.hiderecent.utils.PreferenceUtils
 
-
-@Suppress("unused")
 class MainHook : IXposedHookLoadPackage {
 
     override fun handleLoadPackage(lpparam: LoadPackageParam) {
@@ -21,6 +20,11 @@ class MainHook : IXposedHookLoadPackage {
         val visibleFilterHook: XC_MethodHook = object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
                 val intent = callMethod(param.args[0], "getBaseIntent") as Intent
+                if (BuildConfig.DEBUG) {
+                    XposedBridge.log("Hide - Current Intent: $intent")
+                    XposedBridge.log("Hide - Current component: ${intent.component}")
+                    XposedBridge.log("Hide - Current package: ${intent.component?.packageName}")
+                }
                 val packageName = intent.component?.packageName ?: return
                 if (packages.contains(packageName)) {
                     param.result = false
@@ -29,8 +33,10 @@ class MainHook : IXposedHookLoadPackage {
         }
         try {
             findAndHookMethod(
-                "com.android.server.wm.RecentTasks", lpparam.classLoader,
-                "isVisibleRecentTask", "com.android.server.wm.Task",
+                "com.android.server.wm.RecentTasks",
+                lpparam.classLoader,
+                "isVisibleRecentTask",
+                "com.android.server.wm.Task",
                 visibleFilterHook
             )
         } catch (ignored: Throwable) {
@@ -40,7 +46,8 @@ class MainHook : IXposedHookLoadPackage {
     private val packages: MutableSet<String>
 
     init {
-        val xsp = XSharedPreferences(BuildConfig.APPLICATION_ID, PreferenceUtils.functionalConfigName)
+        val xsp =
+            XSharedPreferences(BuildConfig.APPLICATION_ID, PreferenceUtils.functionalConfigName)
         xsp.makeWorldReadable()
         packages = PreferenceUtils.getPackageListFromPref(xsp)
     }
