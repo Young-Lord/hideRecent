@@ -11,8 +11,8 @@ android {
         applicationId "moe.lyniko.hiderecent"
         minSdk 29
         targetSdk 34
-        versionCode 200
-        versionName "2.0.0"
+        versionCode 201
+        versionName "2.0.1"
     }
 
     buildTypes {
@@ -34,8 +34,6 @@ android {
         jvmTarget = '1.8'
     }
     buildFeatures {
-        // viewBinding true
-        // dataBinding true
         buildConfig true
         compose true
     }

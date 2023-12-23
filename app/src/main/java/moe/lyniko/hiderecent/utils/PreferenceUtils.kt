@@ -3,14 +3,13 @@ package moe.lyniko.hiderecent.utils
 import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
 import moe.lyniko.hiderecent.MyApplication
 import moe.lyniko.hiderecent.R
 
 class PreferenceUtils( // init context on constructor
     context: Context
 ) {
-    // wow, control flow.
+    // ------ 1. get several SharedPreferences (funcPref is the only accessible during Xposed inject) ------
     @SuppressLint("WorldReadableFiles")
     private var funcPref: SharedPreferences = try {
         @Suppress("DEPRECATION")
@@ -20,26 +19,35 @@ class PreferenceUtils( // init context on constructor
         // Log.w("PreferenceUtil", "Fallback to Private SharedPref for error!!!: ${e.message}")
         // context.getSharedPreferences(functionalConfigName, Context.MODE_PRIVATE)
     }
+
     var managerPref: SharedPreferences =
         context.getSharedPreferences(managerConfigName, Context.MODE_PRIVATE)
+
     @SuppressLint("WorldReadableFiles")
     @Suppress("DEPRECATION")
     private val legacyFuncPref = context.getSharedPreferences(legacyConfigName, Context.MODE_WORLD_READABLE)
-    private fun initPackageFromLegacyAndNew(funcPref: SharedPreferences, legacyPref: SharedPreferences): MutableSet<String> {
+    
+    // ------ 2. init packages ------
+    private fun initPackageFromLegacyAndNew(funcPref: SharedPreferences, legacyPref: SharedPreferences) {
         val legacyPackages = legacyPref.getString(legacyModeStringMode, "")?.removeSurrounding("#")?.split("##")?.toMutableSet()
-        val ret: MutableSet<String> = if(!legacyPackages.isNullOrEmpty()) {
-            // remove legacy data
+        val newPackages = getPackageListFromPref(funcPref)
+        if(newPackages.isEmpty() && !legacyPackages.isNullOrEmpty()) {
+            // remove legacy data only if only legacy one has data.
             // Log.d("PreferenceUtil", "initPackageFromLegacyAndNew: $legacyPackages")
             legacyPref.edit().remove(legacyModeStringMode).apply()
-            legacyPackages
+            packages = legacyPackages
+            commitPackageList()
         } else {
-            getPackageListFromPref(funcPref)
+            packages = newPackages
         }
-        ret.remove("")
-        return ret
+        packages.remove("") // have no idea why this occurs.
     }
-    private var packages: MutableSet<String> = initPackageFromLegacyAndNew(funcPref, legacyFuncPref)
 
+    private lateinit var packages: MutableSet<String>
+
+    init {
+        initPackageFromLegacyAndNew(funcPref, legacyFuncPref)
+    }
     companion object {
 
         @Volatile
