@@ -8,7 +8,7 @@ Designed in pure Kotlin & Jetpack Compose & Material Design 3. Can be a template
 
 > Tested on: Android 10 (AOSP),  Android 11 (MIUI 12), Android 13 (AOSP), Android 13 (MIUI 14), Android 14 (AOSP); may work on [10 <= Android <= 14](http://aospxref.com/android-10.0.0_r47/xref/frameworks/base/services/core/java/com/android/server/wm/RecentTasks.java#1272)
 
-1. Select `android` in module scope and activate the module
+1. Select `android` (or `system`, [see this](https://github.com/LSPosed/LSPosed/releases/tag/v1.9.1)) in module scope and activate the module
 2. Select the apps you want to hide from recent app list
 3. Reboot (you MUST reboot when you modify the list, or changes will not be applied until next reboot)
 4. If you need multi-user support, install this module only in main user, and use [Shizuku](https://shizuku.rikka.app/download/) to get app info from other users.
