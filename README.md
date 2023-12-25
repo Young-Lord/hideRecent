@@ -25,7 +25,9 @@ Xposed Modules Repo URL: <https://github.com/Xposed-Modules-Repo/moe.lyniko.hide
 
 ## Technical Details
 
-Material Design 3 + Jetpack Compose + Kotlin.
+UI: Material Design 3 + Jetpack Compose + Kotlin.
+
+Hook: Hook `com.android.server.wm.RecentTasks.isVisibleRecentTask(com.android.server.wm.Task)`, `(callMethod(param.args[0], "getBaseIntent") as Intent).component?.packageName` is package name.
 
 ## HELP ME IT DOESNT WORK!!!
 
