@@ -38,6 +38,6 @@ fun isShizukuAvailable(): Boolean {
 fun isShizukuNeeded(context: Context): Boolean {
     return PreferenceUtils.getInstance(context).managerPref.getBoolean(
         ConfigKeys.ShowPackageForAllUser.key,
-        false
+        ConfigKeys.ShowPackageForAllUser.default,
     )
 }

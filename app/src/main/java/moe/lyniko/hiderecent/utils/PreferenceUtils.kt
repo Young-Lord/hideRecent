@@ -6,11 +6,11 @@ import android.content.SharedPreferences
 import moe.lyniko.hiderecent.MyApplication
 import moe.lyniko.hiderecent.R
 
+@SuppressLint("WorldReadableFiles")
 class PreferenceUtils( // init context on constructor
     context: Context
 ) {
     // ------ 1. get several SharedPreferences (funcPref is the only accessible during Xposed inject) ------
-    @SuppressLint("WorldReadableFiles")
     private var funcPref: SharedPreferences = try {
         @Suppress("DEPRECATION")
         context.getSharedPreferences(functionalConfigName, Context.MODE_WORLD_READABLE)
@@ -20,10 +20,10 @@ class PreferenceUtils( // init context on constructor
         // context.getSharedPreferences(functionalConfigName, Context.MODE_PRIVATE)
     }
 
+    @Suppress("DEPRECATION")
     var managerPref: SharedPreferences =
-        context.getSharedPreferences(managerConfigName, Context.MODE_PRIVATE)
+        context.getSharedPreferences(managerConfigName, Context.MODE_WORLD_READABLE)
 
-    @SuppressLint("WorldReadableFiles")
     @Suppress("DEPRECATION")
     private val legacyFuncPref = context.getSharedPreferences(legacyConfigName, Context.MODE_WORLD_READABLE)
     
@@ -64,8 +64,9 @@ class PreferenceUtils( // init context on constructor
         private const val legacyConfigName = "config"
         private const val legacyModeStringMode = "Mode"
 
-        enum class ConfigKeys(val key: String) {
-            ShowPackageForAllUser("show_package_for_all_user")
+        enum class ConfigKeys(val key: String, val default: Boolean) {
+            ShowPackageForAllUser("show_package_for_all_user", false),
+            HideNoActivityPackages("hide_no_activity_packages", true)
         }
 
         fun getPackageListFromPref(pref: SharedPreferences): MutableSet<String> {
@@ -80,7 +81,7 @@ class PreferenceUtils( // init context on constructor
     }
 
     fun addPackage(pkg: String): Int {
-        if(pkg.isEmpty()) return 0
+        if(pkg.isEmpty() || pkg == "*") return 0
         val ret = if (packages.add(pkg)) 1 else 0
         // Log.w("PreferenceUtil", "addPackage: $pkg -> $ret")
         commitPackageList()
@@ -112,6 +113,9 @@ class PreferenceUtils( // init context on constructor
                     "# version=$version\n# -* # ${MyApplication.resourcesPublic.getString(R.string.export_uncomment_hint)}\n"
                 packages.forEach { pkg ->
                     result += "+$pkg\n"
+                }
+                if (packages.isEmpty()){
+                    result += "# +com.example.package  # ${MyApplication.resourcesPublic.getString(R.string.export_demo_hint)}\n"
                 }
                 return result
             }

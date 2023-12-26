@@ -55,6 +55,7 @@ import moe.lyniko.hiderecent.ui.theme.MyApplicationTheme
 import moe.lyniko.hiderecent.utils.AppUtils
 import moe.lyniko.hiderecent.utils.ParsedPackage
 import moe.lyniko.hiderecent.utils.PreferenceUtils
+import moe.lyniko.hiderecent.utils.PreferenceUtils.Companion.ConfigKeys
 import moe.lyniko.hiderecent.utils.getIdByUserHandle
 
 fun Context.getActivity(): ComponentActivity? = when (this) {
@@ -165,6 +166,30 @@ fun HomeView() {
                 "Wrong user id: ${getIdByUserHandle(userHandle)}"
             )
         }
+        if (appUtils.parsedApps.isEmpty()) {
+            LaunchedEffect(snackbarHostState) {
+                scope.launch {
+                    snackbarHostState.showSnackbar(
+                        context.getString(R.string.apps_not_fetched),
+                        actionLabel = context.getString(R.string.dismiss_notification),
+                        duration = SnackbarDuration.Indefinite
+                    )
+                }
+            }
+        } else if (!appUtils.isActivitiesFetched() && preferenceUtils.managerPref.getBoolean(
+                ConfigKeys.HideNoActivityPackages.key, ConfigKeys.HideNoActivityPackages.default
+            )
+        ) {
+            LaunchedEffect(snackbarHostState) {
+                scope.launch {
+                    snackbarHostState.showSnackbar(
+                        context.getString(R.string.activity_not_fetched),
+                        actionLabel = context.getString(R.string.dismiss_notification),
+                        duration = SnackbarDuration.Indefinite
+                    )
+                }
+            }
+        }
     }
 }
 
@@ -176,7 +201,9 @@ private fun getDisplayApps(): List<ParsedPackage> {
         appsFiltered
     } else appsFiltered.filter { it.isLowerCasedSearchMatch(trimmedLowerCasedSearch) }
     // sort by app name and package name
-    appsFiltered = appsFiltered.sortedWith(compareByDescending<ParsedPackage> { preferenceUtils.isPackageInList(it.packageName) }.thenBy { it.appName }.thenBy { it.packageName })
+    appsFiltered = appsFiltered.sortedWith(compareByDescending<ParsedPackage> {
+        preferenceUtils.isPackageInList(it.packageName)
+    }.thenBy { it.appName }.thenBy { it.packageName })
     // appsFiltered = appsFiltered.sortedBy { it.packageName }.sortedBy { it.appName }.sortedBy{ !preferenceUtils.isPackageInList(it.packageName) }
     return appsFiltered
 }

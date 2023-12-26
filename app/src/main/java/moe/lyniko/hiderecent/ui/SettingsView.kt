@@ -23,6 +23,7 @@ import moe.lyniko.hiderecent.utils.isShizukuAvailable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.setValue
 import me.zhanghai.compose.preference.Preference
+import me.zhanghai.compose.preference.switchPreference
 
 
 @Composable
@@ -38,7 +39,7 @@ fun SettingsView() {
                     mutableStateOf(
                         managerPref.getBoolean(
                             ConfigKeys.ShowPackageForAllUser.key,
-                            false
+                            ConfigKeys.ShowPackageForAllUser.default
                         )
                     )
                 }
@@ -55,6 +56,12 @@ fun SettingsView() {
                     summary = { Text(context.getString(R.string.show_package_for_all_user_summary)) },
                 )
             }
+            switchPreference(
+                key=ConfigKeys.HideNoActivityPackages.key,
+                defaultValue = ConfigKeys.HideNoActivityPackages.default,
+                title = { Text(context.getString(R.string.hide_no_activity_packages)) },
+                summary = { Text(context.getString(R.string.hide_no_activity_packages_summary)) },
+            )
             item {
                 Preference(
                     title = { Text(context.getString(R.string.export_config)) },

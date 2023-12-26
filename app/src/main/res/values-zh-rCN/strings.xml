@@ -13,8 +13,12 @@
     <string name="clear_search">清除搜索框</string>
     <string name="main_user_only">此模块仅能在主用户（用户0）中使用。当前用户为$1%d。</string>
     <string name="shizuku_not_available_toast">Shizuku / Sui 未运行，仅显示当前用户的应用。</string>
+    <string name="activity_not_fetched">基于 Activity 的应用列表过滤器未激活，因此显示了不出现在最近应用列表中的应用。这可能是你的系统的 bug。</string>
+    <string name="apps_not_fetched">获取应用列表失败。你仍然可以通过在设置页面导入或导出包名来编辑设置。</string>
     <string name="show_package_for_all_user">显示来自所有用户的应用</string>
     <string name="show_package_for_all_user_summary">需要 Shizuku 或 Sui。重启应用生效。</string>
+    <string name="hide_no_activity_packages">基于 Activity 信息过滤应用</string>
+    <string name="hide_no_activity_packages_summary">从本模块的应用列表中隐藏不会显示在“最近任务列表”中的应用。重启应用生效。</string>
     <string name="hide_icon_in_launcher">从启动器（桌面）隐藏此模块</string>
     <string name="dismiss_notification">忽略</string>
     <string name="import_config">导入配置至剪贴板</string>
@@ -25,7 +29,8 @@
     <string name="import_config_failed_perm">导入配置失败。请检查你是否给予了对应权限。</string>
     <string name="import_config_failed_wrong">导入配置失败。配置内容格式有误。</string>
     <string name="import_config_success">导入配置成功。</string>
-    <string name="export_uncomment_hint">导入配置前，删掉此行的首个#以重置已有配置</string>
+    <string name="export_uncomment_hint">导入配置前，删掉此行的首个`# `以重置已有配置</string>
+    <string name="export_demo_hint">本行为配置格式的示例，删除`# `表示为`com.example.package`启用隐藏</string>
     <plurals name="import_config_success_count">
         <item quantity="other">成功更改 %1$d 条配置。</item>
     </plurals>

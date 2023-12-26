@@ -25,17 +25,55 @@ class AppUtils(
                 instance ?: AppUtils(context).also { instance = it }
             }
     }
+
     // the package manager
     private val packageManager: PackageManager = context.packageManager
-    private val getInstalledPackagesFlags: Int = PackageManager.GET_ACTIVITIES or PackageManager.GET_META_DATA
+    private val baseGetInstalledPackagesFlags: Int =
+        PackageManager.GET_ACTIVITIES or PackageManager.GET_META_DATA
+    private var getInstalledPackagesFlags: Int = baseGetInstalledPackagesFlags
+    private val preferenceUtils = PreferenceUtils.getInstance(context)
+
+    private fun removeActivitiesFetch() {
+        getInstalledPackagesFlags =
+            baseGetInstalledPackagesFlags and (baseGetInstalledPackagesFlags xor PackageManager.GET_ACTIVITIES)
+    }
+    private val allApps: List<PackageInfo> by lazy {
+        // catch random error caused by MIUI or something else
+        if(!preferenceUtils.managerPref.getBoolean(ConfigKeys.HideNoActivityPackages.key, ConfigKeys.HideNoActivityPackages.default)){
+            removeActivitiesFetch()
+        }
+        try {
+            allAppsNoCatch
+        } catch (e: Exception) {
+            e.printStackTrace()
+            if(!isActivitiesFetched()){
+                // skip another try if already failed
+                return@lazy listOf()
+            }
+
+            // remove GET_ACTIVITIES flag
+            removeActivitiesFetch()
+            try{
+                allAppsNoCatch
+            }
+            catch(e: Exception) {
+                e.printStackTrace()
+                listOf()
+            }
+        }
+    }
+
+    fun isActivitiesFetched(): Boolean {
+        return (PackageManager.GET_ACTIVITIES and getInstalledPackagesFlags) != 0
+    }
 
     // a list for all the apps, lazy init
-    private val allApps: List<PackageInfo> by lazy {
+    private val allAppsNoCatch: List<PackageInfo> by lazy {
         // get all the apps
         if (
-            PreferenceUtils.getInstance(context).managerPref.getBoolean(
+            preferenceUtils.managerPref.getBoolean(
                 ConfigKeys.ShowPackageForAllUser.key,
-                false
+                ConfigKeys.ShowPackageForAllUser.default
             ) && isShizukuAvailable()
         ) appForAllUser else appForSingleUser
     }
@@ -63,7 +101,10 @@ class AppUtils(
     }
 
     @SuppressLint("PrivateApi")
-    private fun getInstalledPackagesAsUser(@Suppress("SameParameterValue") flags: Int, userId: Int): List<PackageInfo> {
+    private fun getInstalledPackagesAsUser(
+        @Suppress("SameParameterValue") flags: Int,
+        userId: Int
+    ): List<PackageInfo> {
         // fuck android.
         // https://www.xda-developers.com/implementing-shizuku/
         // Previous version: https://github.com/Young-Lord/hideRecent/commit/8f956002e1edbb95e2e3e945c28ec1a716596347
@@ -105,7 +146,7 @@ class AppUtils(
         // get all the apps
         val result = ArrayList<PackageInfo>()
         allApps.forEach {
-            if (result.find { pkg -> pkg.packageName == it.packageName } == null && ! it.activities.isNullOrEmpty()) {
+            if (result.find { pkg -> pkg.packageName == it.packageName } == null && (!isActivitiesFetched() || !it.activities.isNullOrEmpty())) {
                 // filter for multi-user and filter those without activities
                 result.add(it)
             }

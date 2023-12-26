@@ -16,8 +16,12 @@
     <string name="clear_search">Clear search box</string>
     <string name="shizuku_not_available_toast">Shizuku / Sui not working, only current user\'s packages are displayed.</string>
     <string name="main_user_only">This module should be used in main user (user 0) only. Current user is %1$d.</string>
+    <string name="activity_not_fetched">Activity filter is not running properly, so non-applicable apps are shown. This may be a bug of your ROM.</string>
+    <string name="apps_not_fetched">Fetching application list failed. You can still edit settings by importing and exporting package names.</string>
     <string name="show_package_for_all_user">Show applications of all users.</string>
     <string name="show_package_for_all_user_summary">Require Shizuku / Sui to work. Restart module after changing this.</string>
+    <string name="hide_no_activity_packages">Exclude applications by Activity</string>
+    <string name="hide_no_activity_packages_summary">Hide applications not displayed in Recent Tasks from module\'s application list. Restart module after changing this.</string>
     <string name="hide_icon_in_launcher">Hide module in launcher.</string>
     <string name="dismiss_notification">DISMISS</string>
     <string name="import_config">Import Config from Clipboard</string>
@@ -29,6 +33,7 @@
     <string name="import_config_failed_wrong">Failed. Wrong config format.</string>
     <string name="import_config_success">Config imported.</string>
     <string name="export_uncomment_hint">uncomment this line to reset before importing</string>
+    <string name="export_demo_hint">this line is a demo for config format, remove `# ` means enabling for `com.example.package`</string>
     <plurals name="import_config_success_count">
         <item quantity="one">%1$d config entry changed.</item>
         <item quantity="other">%1$d config entries changed.</item>
