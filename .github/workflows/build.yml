@@ -38,13 +38,13 @@ jobs:
           ./gradlew assemble --stacktrace
 
       - name: Upload APK
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: my-build-apk
           path: app/build/outputs/apk
 
       - name: Upload mapping
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: mapping
           path: app/build/outputs/mapping
