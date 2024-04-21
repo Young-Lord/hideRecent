@@ -22,7 +22,7 @@
     <string name="show_package_for_all_user_summary">Require Shizuku / Sui to work. Restart module after changing this.</string>
     <string name="hide_no_activity_packages">Exclude applications by Activity</string>
     <string name="hide_no_activity_packages_summary">Hide applications not displayed in Recent Tasks from module\'s application list. Restart module after changing this.</string>
-    <string name="hide_icon_in_launcher">Hide module in launcher.</string>
+    <string name="hide_icon_in_launcher">Hide module in launcher</string>
     <string name="dismiss_notification">DISMISS</string>
     <string name="import_config">Import Config from Clipboard</string>
     <string name="export_config">Export Config to Clipboard</string>

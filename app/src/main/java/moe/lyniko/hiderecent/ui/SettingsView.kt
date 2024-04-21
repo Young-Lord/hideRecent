@@ -2,7 +2,9 @@ package moe.lyniko.hiderecent.ui
 
 import android.content.ClipData
 import android.content.ClipboardManager
+import android.content.ComponentName
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Build
 import android.widget.Toast
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,6 +18,7 @@ import androidx.compose.ui.platform.LocalContext
 import me.zhanghai.compose.preference.ProvidePreferenceLocals
 import me.zhanghai.compose.preference.getPreferenceFlow
 import me.zhanghai.compose.preference.SwitchPreference
+import moe.lyniko.hiderecent.BuildConfig
 import moe.lyniko.hiderecent.R
 import moe.lyniko.hiderecent.utils.PreferenceUtils
 import moe.lyniko.hiderecent.utils.PreferenceUtils.Companion.ConfigKeys
@@ -66,7 +69,6 @@ fun SettingsView() {
                 Preference(
                     title = { Text(context.getString(R.string.export_config)) },
                     onClick = {
-                        // clipboard
                         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                         val clip = ClipData.newPlainText("config", PreferenceUtils.getInstance(context).packagesToString())
                         try {
@@ -85,7 +87,6 @@ fun SettingsView() {
                 Preference(
                     title = { Text(context.getString(R.string.import_config)) },
                     onClick = {
-                        // clipboard
                         val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
 
                         val clipboardData: CharSequence?
@@ -110,6 +111,28 @@ fun SettingsView() {
                             e.printStackTrace()
                         }
                     }
+                )
+            }
+            item {
+                val appHomeComponent = ComponentName(BuildConfig.APPLICATION_ID, BuildConfig.APPLICATION_ID + ".LauncherActivity")
+                var switchMutableState by remember {
+                    mutableStateOf(
+                        context.packageManager?.getComponentEnabledSetting(
+                            appHomeComponent
+                        ) == PackageManager.COMPONENT_ENABLED_STATE_DISABLED
+                    )
+                }
+                SwitchPreference(
+                    value = switchMutableState,
+                    onValueChange = {
+                        switchMutableState = it
+                        context.packageManager?.setComponentEnabledSetting(
+                            appHomeComponent,
+                            if (it) PackageManager.COMPONENT_ENABLED_STATE_DISABLED else PackageManager.COMPONENT_ENABLED_STATE_ENABLED,
+                            PackageManager.DONT_KILL_APP
+                        )
+                    },
+                    title = { Text(context.getString(R.string.hide_icon_in_launcher)) },
                 )
             }
         }
