@@ -4,7 +4,7 @@ Simple module to hide any app from recent task list.
 
 Designed in pure Kotlin & Jetpack Compose & Material Design 3. Can be a template for any Xposed module with an application selection list.
 
-![UI Screenshot](https://github.com/Young-Lord/hideRecent/assets/51789698/ff1ad497-41c8-4540-aa94-794c3ddb2609)
+![UI Screenshot](https://github.com/Young-Lord/hideRecent/raw/master/assets/image/preview.jpg)
 
 ## How to use
 
