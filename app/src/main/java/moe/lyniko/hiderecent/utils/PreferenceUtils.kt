@@ -78,6 +78,18 @@ class PreferenceUtils( // init context on constructor
 
     private fun commitPackageList() {
         funcPref.edit().putStringSet(packagesTag, packages).apply()
+        syncToRemotePreferences()
+    }
+
+    private fun syncToRemotePreferences() {
+        try {
+            val service = MyApplication.xposedService ?: return
+            service.getRemotePreferences(functionalConfigName)
+                .edit()
+                .putStringSet(packagesTag, packages)
+                .apply()
+        } catch (_: Throwable) {
+        }
     }
 
     fun addPackage(pkg: String): Int {

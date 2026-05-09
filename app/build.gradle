@@ -1,11 +1,12 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'org.jetbrains.kotlin.plugin.compose'
 }
 
 android {
     namespace 'moe.lyniko.hiderecent'
-    compileSdk 34
+    compileSdk 36
 
     defaultConfig {
         applicationId "moe.lyniko.hiderecent"
@@ -28,29 +29,31 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = '1.8'
+        jvmTarget = '17'
     }
     buildFeatures {
         buildConfig true
         compose true
     }
-    composeOptions {
-        kotlinCompilerExtensionVersion '1.4.3'
-    }
     packagingOptions {
         resources {
+            merges += 'META-INF/xposed/*'
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
 }
 
 dependencies {
-    // module stuff
+    // module stuff - legacy Xposed API (for old LSPosed versions)
     compileOnly 'de.robv.android.xposed:api:82'
+    // modern libxposed API (for LSPosed API 100+)
+    compileOnly 'io.github.libxposed:api:101.0.0'
+    implementation 'io.github.libxposed:service:101.0.0'
+
     implementation 'org.lsposed.hiddenapibypass:hiddenapibypass:4.3'
     def shizuku_version = '13.1.5'
     implementation "dev.rikka.shizuku:api:$shizuku_version"
@@ -58,12 +61,12 @@ dependencies {
     implementation 'me.zhanghai.compose.preference:library:1.0.0'
 
     // ui stuff
-    implementation "com.google.accompanist:accompanist-drawablepainter:0.28.0"
+    implementation "com.google.accompanist:accompanist-drawablepainter:0.36.0"
     implementation "androidx.navigation:navigation-compose:2.7.6"
     implementation 'androidx.core:core-ktx:1.12.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.6.2'
     implementation 'androidx.activity:activity-compose:1.8.2'
-    implementation platform('androidx.compose:compose-bom:2022.10.00')
+    implementation platform('androidx.compose:compose-bom:2024.12.01')
     implementation 'androidx.compose.ui:ui'
     implementation 'androidx.compose.ui:ui-graphics'
     implementation 'androidx.compose.ui:ui-tooling-preview'
