@@ -34,13 +34,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        try {
-            PreferenceUtils.getInstance(this)
-        } catch (e: SecurityException) {
-            Toast.makeText(this, getString(R.string.not_activated), Toast.LENGTH_LONG).show()
-            finish()
-            return
-        }
+        PreferenceUtils.getInstance(this)
         setContent {
             MyApplicationTheme {
 

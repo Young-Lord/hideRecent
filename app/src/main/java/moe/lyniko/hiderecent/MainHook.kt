@@ -19,12 +19,8 @@ class MainHook : IXposedHookLoadPackage {
     private fun onAppHooked(lpparam: LoadPackageParam) {
         val visibleFilterHook: XC_MethodHook = object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
+                if (!loaded) tryLoadPackages()
                 val intent = callMethod(param.args[0], "getBaseIntent") as Intent
-                if (BuildConfig.DEBUG) {
-                    XposedBridge.log("Hide - Current Intent: $intent")
-                    XposedBridge.log("Hide - Current component: ${intent.component}")
-                    XposedBridge.log("Hide - Current package: ${intent.component?.packageName}")
-                }
                 val packageName = intent.component?.packageName ?: return
                 if (packages.contains(packageName)) {
                     param.result = false
@@ -39,16 +35,29 @@ class MainHook : IXposedHookLoadPackage {
                 "com.android.server.wm.Task",
                 visibleFilterHook
             )
-        } catch (ignored: Throwable) {
+            XposedBridge.log("HideRecent: hook installed, packages=$packages")
+        } catch (t: Throwable) {
+            XposedBridge.log("HideRecent: hook FAILED")
+            XposedBridge.log(t)
         }
     }
 
-    private val packages: MutableSet<String>
+    @Volatile
+    private var packages: Set<String> = emptySet()
+    @Volatile
+    private var loaded = false
+
+    private fun tryLoadPackages() {
+        val xsp = XSharedPreferences(BuildConfig.APPLICATION_ID, PreferenceUtils.functionalConfigName)
+        xsp.makeWorldReadable()
+        val pkgs = PreferenceUtils.getPackageListFromPref(xsp)
+        if (pkgs.isNotEmpty()) {
+            packages = pkgs
+            loaded = true
+        }
+    }
 
     init {
-        val xsp =
-            XSharedPreferences(BuildConfig.APPLICATION_ID, PreferenceUtils.functionalConfigName)
-        xsp.makeWorldReadable()
-        packages = PreferenceUtils.getPackageListFromPref(xsp)
+        tryLoadPackages()
     }
 }

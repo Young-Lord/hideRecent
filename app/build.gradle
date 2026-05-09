@@ -41,18 +41,13 @@ android {
     }
     packagingOptions {
         resources {
-            merges += 'META-INF/xposed/*'
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
 }
 
 dependencies {
-    // module stuff - legacy Xposed API (for old LSPosed versions)
     compileOnly 'de.robv.android.xposed:api:82'
-    // modern libxposed API (for LSPosed API 100+)
-    compileOnly 'io.github.libxposed:api:101.0.0'
-    implementation 'io.github.libxposed:service:101.0.0'
 
     implementation 'org.lsposed.hiddenapibypass:hiddenapibypass:4.3'
     def shizuku_version = '13.1.5'
