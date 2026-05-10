@@ -10,22 +10,14 @@ import moe.lyniko.hiderecent.R
 class PreferenceUtils( // init context on constructor
     context: Context
 ) {
-    // ------ 1. get several SharedPreferences (funcPref is the only accessible during Xposed inject) ------
-    private var funcPref: SharedPreferences = try {
-        @Suppress("DEPRECATION")
-        context.getSharedPreferences(functionalConfigName, Context.MODE_WORLD_READABLE)
-    } catch (e: SecurityException) {
-        throw e
-        // Log.w("PreferenceUtil", "Fallback to Private SharedPref for error!!!: ${e.message}")
-        // context.getSharedPreferences(functionalConfigName, Context.MODE_PRIVATE)
-    }
+    // ------ 1. get several SharedPreferences ------
+    // Vector/LSPosed hooks checkMode to allow MODE_WORLD_READABLE when the module
+    // is in its own scope. Fall back to MODE_PRIVATE if the hook isn't active.
+    private var funcPref: SharedPreferences = openWorldReadable(context, functionalConfigName)
 
-    @Suppress("DEPRECATION")
-    var managerPref: SharedPreferences =
-        context.getSharedPreferences(managerConfigName, Context.MODE_WORLD_READABLE)
+    var managerPref: SharedPreferences = openWorldReadable(context, managerConfigName)
 
-    @Suppress("DEPRECATION")
-    private val legacyFuncPref = context.getSharedPreferences(legacyConfigName, Context.MODE_WORLD_READABLE)
+    private val legacyFuncPref = openWorldReadable(context, legacyConfigName)
     
     // ------ 2. init packages ------
     private fun initPackageFromLegacyAndNew(funcPref: SharedPreferences, legacyPref: SharedPreferences) {
@@ -57,6 +49,15 @@ class PreferenceUtils( // init context on constructor
             instance ?: synchronized(this) {
                 instance ?: PreferenceUtils(context).also { instance = it }
             }
+
+        @Suppress("DEPRECATION")
+        private fun openWorldReadable(context: Context, name: String): SharedPreferences {
+            return try {
+                context.getSharedPreferences(name, Context.MODE_WORLD_READABLE)
+            } catch (_: SecurityException) {
+                context.getSharedPreferences(name, Context.MODE_PRIVATE)
+            }
+        }
 
         private const val packagesTag = "packages"
         const val functionalConfigName = "functional_config"

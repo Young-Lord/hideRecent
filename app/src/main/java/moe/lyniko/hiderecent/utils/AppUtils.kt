@@ -165,10 +165,11 @@ class ParsedPackage(
 ) {
     // lazy init
     val appName: String by lazy {
-        packageManager.getApplicationLabel(pkg.applicationInfo).toString()
+        val appInfo = pkg.applicationInfo ?: return@lazy pkg.packageName
+        packageManager.getApplicationLabel(appInfo).toString()
     }
     val appIcon: Drawable by lazy {
-        pkg.applicationInfo.loadIcon(packageManager)
+        pkg.applicationInfo?.loadIcon(packageManager) ?: packageManager.defaultActivityIcon
     }
     val packageName: String by lazy {
         pkg.packageName
@@ -176,7 +177,7 @@ class ParsedPackage(
 
     @Suppress("unused")
     val versionName: String by lazy {
-        pkg.versionName
+        pkg.versionName ?: ""
     }
 
     @Suppress("unused")
@@ -184,7 +185,7 @@ class ParsedPackage(
         pkg.longVersionCode
     }
     val isSystemApp: Boolean by lazy {
-        (pkg.applicationInfo.flags and android.content.pm.ApplicationInfo.FLAG_SYSTEM) != 0
+        (pkg.applicationInfo?.flags?.and(android.content.pm.ApplicationInfo.FLAG_SYSTEM) ?: 0) != 0
     }
     private val packageNameLowerCase: String by lazy {
         packageName.lowercase()

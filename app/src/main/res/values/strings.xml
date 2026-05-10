@@ -9,6 +9,7 @@
     <string name="not_activated">Please activate this module in LSPosed Manager, then force stop.</string>
     <string-array name="xposedscope" translatable="false">
         <item>android</item>
+        <item>moe.lyniko.hiderecent</item>
     </string-array>
     <string name="title_home">Home</string>
     <string name="title_settings">Settings</string>

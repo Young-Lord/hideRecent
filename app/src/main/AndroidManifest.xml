@@ -15,6 +15,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.HideRecentTask"
         android:name="moe.lyniko.hiderecent.MyApplication"
+        android:description="@string/xposeddescription"
         tools:targetApi="31">
         <meta-data
             android:name="xposedmodule"
@@ -43,7 +44,7 @@
             android:name=".LauncherActivity"
             android:enabled="true"
             android:exported="true"
-            android:targetActivity="${applicationId}.MainActivity">
+            android:targetActivity=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
