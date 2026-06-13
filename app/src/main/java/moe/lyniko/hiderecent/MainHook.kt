@@ -20,8 +20,46 @@ class MainHook : IXposedHookLoadPackage {
         val visibleFilterHook: XC_MethodHook = object : XC_MethodHook() {
             override fun beforeHookedMethod(param: MethodHookParam) {
                 if (!loaded) tryLoadPackages()
-                val intent = callMethod(param.args[0], "getBaseIntent") as Intent
-                val packageName = intent.component?.packageName ?: return
+
+                val taskObject = param.args[0]
+
+                // 1. Safely call getBaseIntent
+                val intent = try {
+                    callMethod(taskObject, "getBaseIntent") as? Intent
+                } catch (t: Throwable) {
+                    XposedBridge.log("HideRecent: Failed to call getBaseIntent(). Error: ${t.message}")
+                    null
+                }
+
+                if (intent == null) {
+                    XposedBridge.log("HideRecent: getBaseIntent() returned null for task: $taskObject")
+                    return
+                }
+
+                // 2. Try to get package name from component or package attribute
+                var packageName = intent.component?.packageName ?: intent.`package`
+
+                // 3. Fallback: Try to reflect the internal intent field directly if packageName is still null
+                if (packageName == null) {
+                    try {
+                        val realIntent = callMethod(taskObject, "intent") as? Intent
+                        if (realIntent != null) {
+                            packageName = realIntent.component?.packageName ?: realIntent.`package`
+                        } else {
+                            XposedBridge.log("HideRecent: Internal intent field is also null")
+                        }
+                    } catch (t: Throwable) {
+                        XposedBridge.log("HideRecent: Failed to reflect internal intent field. Error: ${t.message}")
+                    }
+                }
+
+                // 4. Final check for package name
+                if (packageName == null) {
+                    XposedBridge.log("HideRecent: Cannot resolve packageName for intent: $intent")
+                    return
+                }
+
+                // 5. Match the blocklist and intercept
                 if (packages.contains(packageName)) {
                     param.result = false
                 }
