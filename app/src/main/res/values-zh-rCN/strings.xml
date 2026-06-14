@@ -19,6 +19,9 @@
     <string name="show_package_for_all_user_summary">需要 Shizuku 或 Sui。重启应用生效。</string>
     <string name="hide_no_activity_packages">基于 Activity 信息过滤应用</string>
     <string name="hide_no_activity_packages_summary">从本模块的应用列表中隐藏不会显示在“最近任务列表”中的应用。重启应用生效。</string>
+    <string name="package_hide_mode_none">/</string>
+    <string name="package_hide_mode_hide_task">隐藏任务</string>
+    <string name="package_hide_mode_hide_content">隐藏缩略图</string>
     <string name="hide_icon_in_launcher">从启动器（桌面）隐藏此模块</string>
     <string name="dismiss_notification">忽略</string>
     <string name="import_config">导入配置至剪贴板</string>
@@ -30,7 +33,7 @@
     <string name="import_config_failed_wrong">导入配置失败。配置内容格式有误。</string>
     <string name="import_config_success">导入配置成功。</string>
     <string name="export_uncomment_hint">导入配置前，删掉此行的首个`# `以重置已有配置</string>
-    <string name="export_demo_hint">本行为配置格式的示例，删除`# `表示为`com.example.package`启用隐藏</string>
+    <string name="export_demo_hint">本行为配置格式的示例，删除`# `以应用此规则</string>
     <plurals name="import_config_success_count">
         <item quantity="other">成功更改 %1$d 条配置。</item>
     </plurals>

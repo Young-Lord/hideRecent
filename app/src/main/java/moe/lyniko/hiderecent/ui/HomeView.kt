@@ -20,6 +20,8 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -29,10 +31,10 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
-import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -55,6 +57,7 @@ import moe.lyniko.hiderecent.ui.theme.MyApplicationTheme
 import moe.lyniko.hiderecent.utils.AppUtils
 import moe.lyniko.hiderecent.utils.ParsedPackage
 import moe.lyniko.hiderecent.utils.PreferenceUtils
+import moe.lyniko.hiderecent.utils.PreferenceUtils.PackageHideMode
 import moe.lyniko.hiderecent.utils.PreferenceUtils.Companion.ConfigKeys
 import moe.lyniko.hiderecent.utils.getIdByUserHandle
 
@@ -202,9 +205,10 @@ private fun getDisplayApps(): List<ParsedPackage> {
     } else appsFiltered.filter { it.isLowerCasedSearchMatch(trimmedLowerCasedSearch) }
     // sort by app name and package name
     appsFiltered = appsFiltered.sortedWith(compareByDescending<ParsedPackage> {
-        preferenceUtils.isPackageInList(it.packageName)
+        preferenceUtils.getPackageMode(it.packageName) != PackageHideMode.NONE
+    }.thenBy {
+        packageHideModeSortPriority(preferenceUtils.getPackageMode(it.packageName))
     }.thenBy { it.appName }.thenBy { it.packageName })
-    // appsFiltered = appsFiltered.sortedBy { it.packageName }.sortedBy { it.appName }.sortedBy{ !preferenceUtils.isPackageInList(it.packageName) }
     return appsFiltered
 }
 
@@ -238,17 +242,70 @@ private fun SingleAppCardForPackage(app: ParsedPackage) {
             )
         }
         Column {
-            var checked by remember { mutableStateOf(preferenceUtils.isPackageInList(app.packageName)) }
-            Switch(checked = checked, onCheckedChange = {
-                if (it) {
-                    preferenceUtils.addPackage(app.packageName)
-                } else {
-                    preferenceUtils.removePackage(app.packageName)
+            var expanded by remember { mutableStateOf(false) }
+            var hideMode by remember(app.packageName) {
+                mutableStateOf(preferenceUtils.getPackageMode(app.packageName))
+            }
+            TextButton(onClick = { expanded = true }) {
+                Text(
+                    text = packageHideModeLabel(hideMode),
+                    color = packageHideModeColor(hideMode)
+                )
+            }
+            DropdownMenu(
+                expanded = expanded,
+                onDismissRequest = { expanded = false }
+            ) {
+                packageHideModeOptions.forEach { mode ->
+                    DropdownMenuItem(
+                        text = {
+                            Text(
+                                text = packageHideModeLabel(mode),
+                                color = packageHideModeColor(mode)
+                            )
+                        },
+                        onClick = {
+                            preferenceUtils.setPackageMode(app.packageName, mode)
+                            hideMode = mode
+                            expanded = false
+                        }
+                    )
                 }
-                // update checked state
-                checked = it
-            })
+            }
         }
+    }
+}
+
+private val packageHideModeOptions = listOf(
+    PackageHideMode.HIDE_TASK,
+    PackageHideMode.HIDE_CONTENT,
+    PackageHideMode.NONE
+)
+
+private fun packageHideModeSortPriority(mode: PackageHideMode): Int {
+    return when (mode) {
+        PackageHideMode.HIDE_TASK -> 0
+        PackageHideMode.HIDE_CONTENT -> 1
+        PackageHideMode.NONE -> 2
+    }
+}
+
+@Composable
+private fun packageHideModeLabel(mode: PackageHideMode): String {
+    val context = LocalContext.current
+    return when (mode) {
+        PackageHideMode.NONE -> context.getString(R.string.package_hide_mode_none)
+        PackageHideMode.HIDE_TASK -> context.getString(R.string.package_hide_mode_hide_task)
+        PackageHideMode.HIDE_CONTENT -> context.getString(R.string.package_hide_mode_hide_content)
+    }
+}
+
+@Composable
+private fun packageHideModeColor(mode: PackageHideMode): Color {
+    return when (mode) {
+        PackageHideMode.HIDE_TASK -> MaterialTheme.colorScheme.error
+        PackageHideMode.HIDE_CONTENT -> MaterialTheme.colorScheme.primary
+        PackageHideMode.NONE -> MaterialTheme.colorScheme.onSurfaceVariant
     }
 }
 

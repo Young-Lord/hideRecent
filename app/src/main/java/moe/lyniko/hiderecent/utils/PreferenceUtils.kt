@@ -36,10 +36,28 @@ class PreferenceUtils( // init context on constructor
     }
 
     private lateinit var packages: MutableSet<String>
+    private var contentHiddenPackages: MutableSet<String> = getContentHiddenPackageListFromPref(funcPref)
 
     init {
         initPackageFromLegacyAndNew(funcPref, legacyFuncPref)
+        contentHiddenPackages.remove("")
+        if (contentHiddenPackages.removeAll(packages)) {
+            commitPackageList()
+        }
     }
+
+    enum class PackageHideMode(val configValue: String) {
+        NONE("none"),
+        HIDE_TASK("hide_task"),
+        HIDE_CONTENT("hide_content");
+
+        companion object {
+            fun fromConfigValue(value: String): PackageHideMode? {
+                return entries.firstOrNull { it.configValue == value }
+            }
+        }
+    }
+
     companion object {
 
         @Volatile
@@ -60,6 +78,7 @@ class PreferenceUtils( // init context on constructor
         }
 
         private const val packagesTag = "packages"
+        private const val contentHiddenPackagesTag = "content_hidden_packages"
         const val functionalConfigName = "functional_config"
         const val managerConfigName = "manager_config"
         private const val legacyConfigName = "config"
@@ -74,31 +93,30 @@ class PreferenceUtils( // init context on constructor
             val currentPackageSet = pref.getStringSet(packagesTag, HashSet<String>())
             return currentPackageSet!!.toMutableSet()
         }
+
+        fun getContentHiddenPackageListFromPref(pref: SharedPreferences): MutableSet<String> {
+            val currentPackageSet = pref.getStringSet(contentHiddenPackagesTag, HashSet<String>())
+            return currentPackageSet!!.toMutableSet()
+        }
     }
 
 
     private fun commitPackageList() {
-        funcPref.edit().putStringSet(packagesTag, packages).apply()
+        funcPref.edit()
+            .putStringSet(packagesTag, packages)
+            .putStringSet(contentHiddenPackagesTag, contentHiddenPackages)
+            .apply()
     }
 
     fun addPackage(pkg: String): Int {
-        if(pkg.isEmpty() || pkg == "*") return 0
-        val ret = if (packages.add(pkg)) 1 else 0
+        val ret = setPackageMode(pkg, PackageHideMode.HIDE_TASK)
         // Log.w("PreferenceUtil", "addPackage: $pkg -> $ret")
-        commitPackageList()
         return ret
     }
 
     fun removePackage(pkg: String): Int {
-        val ret: Int
-        if (pkg == "*") {
-            ret = packages.size
-            packages.clear()
-        } else {
-            ret = if (packages.remove(pkg)) 1 else 0
-        }
+        val ret = if (pkg == "*") clearPackageModes() else setPackageMode(pkg, PackageHideMode.NONE)
         // Log.w("PreferenceUtil", "removePackage: $pkg -> $ret")
-        commitPackageList()
         return ret
     }
 
@@ -107,16 +125,72 @@ class PreferenceUtils( // init context on constructor
         return packages.contains(pkg)
     }
 
-    fun packagesToString(version: Int = 1): String {
+    fun isPackageContentHidden(pkg: String): Boolean {
+        return contentHiddenPackages.contains(pkg)
+    }
+
+    fun getPackageMode(pkg: String): PackageHideMode {
+        return when {
+            packages.contains(pkg) -> PackageHideMode.HIDE_TASK
+            contentHiddenPackages.contains(pkg) -> PackageHideMode.HIDE_CONTENT
+            else -> PackageHideMode.NONE
+        }
+    }
+
+    fun setPackageMode(pkg: String, mode: PackageHideMode): Int {
+        if(pkg.isEmpty() || pkg == "*") return 0
+        val oldMode = getPackageMode(pkg)
+        when (mode) {
+            PackageHideMode.NONE -> {
+                packages.remove(pkg)
+                contentHiddenPackages.remove(pkg)
+            }
+            PackageHideMode.HIDE_TASK -> {
+                packages.add(pkg)
+                contentHiddenPackages.remove(pkg)
+            }
+            PackageHideMode.HIDE_CONTENT -> {
+                packages.remove(pkg)
+                contentHiddenPackages.add(pkg)
+            }
+        }
+        commitPackageList()
+        return if (oldMode == mode) 0 else 1
+    }
+
+    private fun clearPackageModes(): Int {
+        val changed = (packages + contentHiddenPackages).size
+        packages.clear()
+        contentHiddenPackages.clear()
+        commitPackageList()
+        return changed
+    }
+
+    fun packagesToString(version: Int = 2): String {
         when (version) {
             1 -> {
                 var result =
                     "# version=$version\n# -* # ${MyApplication.resourcesPublic.getString(R.string.export_uncomment_hint)}\n"
-                packages.forEach { pkg ->
+                packages.sorted().forEach { pkg ->
                     result += "+$pkg\n"
                 }
                 if (packages.isEmpty()){
                     result += "# +com.example.package  # ${MyApplication.resourcesPublic.getString(R.string.export_demo_hint)}\n"
+                }
+                return result
+            }
+            2 -> {
+                var result =
+                    "# version=$version\n# -* # ${MyApplication.resourcesPublic.getString(R.string.export_uncomment_hint)}\n"
+                packages.sorted().forEach { pkg ->
+                    result += "$pkg=${PackageHideMode.HIDE_TASK.configValue}\n"
+                }
+                contentHiddenPackages.sorted().forEach { pkg ->
+                    result += "$pkg=${PackageHideMode.HIDE_CONTENT.configValue}\n"
+                }
+                if (packages.isEmpty() && contentHiddenPackages.isEmpty()){
+                    result += "# com.example.package=${PackageHideMode.HIDE_TASK.configValue}  # ${MyApplication.resourcesPublic.getString(R.string.export_demo_hint)}\n"
+                    result += "# com.example.private=${PackageHideMode.HIDE_CONTENT.configValue}\n"
                 }
                 return result
             }
@@ -165,6 +239,28 @@ class PreferenceUtils( // init context on constructor
                             throw NotImplementedError("Action $action is not implemented")
                         }
                     }
+                }
+            }
+            2 -> {
+                lines.forEach { line ->
+                    val lineWithoutComment = line.split("#")[0].trim()
+                    if (lineWithoutComment.isEmpty()) return@forEach
+
+                    if (lineWithoutComment[0] == '-') {
+                        val currentPackage = lineWithoutComment.substring(1)
+                        if (currentPackage.isEmpty()) return@forEach
+                        if (!validatePackageNameOrAsterisk(currentPackage)) throw NotImplementedError("Invalid package name: $currentPackage")
+                        changed += removePackage(currentPackage)
+                        return@forEach
+                    }
+
+                    val entry = lineWithoutComment.split("=", limit = 2)
+                    if (entry.size != 2) throw NotImplementedError("Invalid config entry: $lineWithoutComment")
+                    val currentPackage = entry[0].trim()
+                    val mode = PackageHideMode.fromConfigValue(entry[1].trim())
+                        ?: throw NotImplementedError("Invalid hide mode: ${entry[1].trim()}")
+                    if (currentPackage.isEmpty() || !validatePackageNameOrAsterisk(currentPackage)) throw NotImplementedError("Invalid package name: $currentPackage")
+                    changed += setPackageMode(currentPackage, mode)
                 }
             }
 

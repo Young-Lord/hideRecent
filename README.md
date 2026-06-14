@@ -1,6 +1,6 @@
 # Hide App from Recent Task List
 
-Simple module to hide any app from recent task list.
+Simple module to hide apps from the recent task list, or keep them visible while hiding their preview snapshots.
 
 Designed in pure Kotlin & Jetpack Compose & Material Design 3. Can be a template for any Xposed module with an application selection list.
 
@@ -12,8 +12,8 @@ Designed in pure Kotlin & Jetpack Compose & Material Design 3. Can be a template
 
 1. Select `System framework` (package name may be `android` or `system` or empty, [see this](https://github.com/LSPosed/LSPosed/releases/tag/v1.9.1)) in module scope and activate the module
 2. Force stop module
-3. Select the apps you want to hide from recent app list in module settings (if package list not shown, you can manually import / export settings to edit config)
-4. Reboot (you MUST reboot when you modify the list, or changes will not be applied until next reboot)
+3. Set a mode for each app in module settings: `No action`, `Hide task`, or `Hide preview` (if package list not shown, you can manually import / export settings to edit config)
+4. Reboot (you MUST reboot when you modify the list or the hide mode, or changes will not be applied until next reboot)
 5. If you need multi-user support, install this module only in main user, and use [Shizuku](https://shizuku.rikka.app/download/) to get app info from other users.
 
 ## Module Scope
@@ -30,7 +30,9 @@ Xposed Modules Repo URL: <https://github.com/Xposed-Modules-Repo/moe.lyniko.hide
 
 UI: Material Design 3 + Jetpack Compose + Kotlin.
 
-Hook: Hook `com.android.server.wm.RecentTasks.isVisibleRecentTask(com.android.server.wm.Task)`, `(callMethod(param.args[0], "getBaseIntent") as Intent).component?.packageName` is package name.
+Hook: Hook `com.android.server.wm.RecentTasks.isVisibleRecentTask(com.android.server.wm.Task)` for apps set to `Hide task`.
+
+For apps set to `Hide preview`, hook `com.android.server.wm.TaskSnapshotController.getSnapshotMode(com.android.server.wm.Task)` and `com.android.server.wm.ActivityRecord.shouldUseAppThemeSnapshot()` so selected apps use an app-theme task snapshot instead of a real screenshot. `com.android.server.wm.Task.getSnapshot(boolean, boolean)` is also hooked to avoid returning previously cached real snapshots.
 
 ## HELP ME IT DOESNT WORK!!!
 
