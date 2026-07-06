@@ -2,16 +2,16 @@
 
 Simple module to hide apps from the recent task list, or keep them visible while hiding their preview snapshots.
 
-Designed in pure Kotlin & Jetpack Compose & Material Design 3. Can be a template for any Xposed module with an application selection list.
+Designed with Kotlin, Jetpack Compose and Material Design 3. Can also serve as a template for any Xposed module with an application selection list.
 
 ![UI Screenshot](https://github.com/Young-Lord/hideRecent/raw/master/assets/image/preview.jpg)
 
 ## How to use
 
-> Tested on: Android 10 (AOSP),  Android 11 (MIUI 12), Android 13 (AOSP), Android 13 (MIUI 14), Android 14 (AOSP); may work on [10 <= Android <= 14](http://aospxref.com/android-10.0.0_r47/xref/frameworks/base/services/core/java/com/android/server/wm/RecentTasks.java#1272)
+> Tested on: Android 10 ~ 16.
 
 1. Select `System framework` (package name may be `android` or `system` or empty, [see this](https://github.com/LSPosed/LSPosed/releases/tag/v1.9.1)) in module scope and activate the module
-2. Force stop module
+2. Force stop the module
 3. Set a mode for each app in module settings: `No action`, `Hide task`, or `Hide preview` (if package list not shown, you can manually import / export settings to edit config)
 4. Reboot (you MUST reboot when you modify the list or the hide mode, or changes will not be applied until next reboot)
 5. If you need multi-user support, install this module only in main user, and use [Shizuku](https://shizuku.rikka.app/download/) to get app info from other users.
@@ -36,15 +36,13 @@ For apps set to `Hide preview`, hook `com.android.server.wm.TaskSnapshotControll
 
 ## HELP ME IT DOESNT WORK!!!
 
-Please open a issue [here](https://github.com/Young-Lord/hideRecent/issues). Provide your Android version, `/system/framework/framework.jar` and all `/system/framework/framework{a number here}.jar` if exist.
-
-I am not intended to support Android < 10, but anyone is free to [send a PR](https://github.com/Young-Lord/hideRecent/pulls) for Android < 10 support.
+Please open a issue [here](https://github.com/Young-Lord/hideRecent/issues). Provide your Android version, `/system/framework/framework.jar`, `/system/framework/services.jar` and all `/system/framework/framework{a number here}.jar` if they exist.
 
 PR for refactoring is also appreciated.
 
 ## License
 
-Apache-2.0 License or MIT License are all OK.
+Apache-2.0 License or MIT License are fine.
 
 ## Thanks
 
