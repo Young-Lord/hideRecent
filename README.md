@@ -12,8 +12,8 @@ Designed with Kotlin, Jetpack Compose and Material Design 3. Can also serve as a
 
 1. Select `System framework` (package name may be `android` or `system` or empty, [see this](https://github.com/LSPosed/LSPosed/releases/tag/v1.9.1)) in module scope and activate the module
 2. Force stop the module
-3. Set a mode for each app in module settings: `No action`, `Hide task`, or `Hide preview` (if package list not shown, you can manually import / export settings to edit config)
-4. Reboot (you MUST reboot when you modify the list or the hide mode, or changes will not be applied until next reboot)
+3. Set a mode for each app in module settings: `No action`, `Hide task`, or `Hide preview` (if the package list is not shown, you can manually import / export settings to edit config)
+4. Reboot (you MUST reboot after modifying the list or the hide mode, otherwise the changes will not take effect)
 5. If you need multi-user support, install this module only in main user, and use [Shizuku](https://shizuku.rikka.app/download/) to get app info from other users.
 
 ## Module Scope
