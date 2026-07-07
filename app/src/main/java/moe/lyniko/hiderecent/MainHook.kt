@@ -19,20 +19,42 @@ class MainHook : IXposedHookLoadPackage {
     }
 
     private fun onAppHooked(lpparam: LoadPackageParam) {
-        installHook("RecentTasks.isVisibleRecentTask") {
+        val visibleRecentTaskHook = object : XC_MethodHook() {
+            override fun beforeHookedMethod(param: MethodHookParam) {
+                if (shouldRemoveTask(param.args[0])) {
+                    param.result = false
+                }
+            }
+        }
+
+        installHook("RecentTasks.isVisibleRecentTask(Task)") {
             findAndHookMethod(
                 "com.android.server.wm.RecentTasks",
                 lpparam.classLoader,
                 "isVisibleRecentTask",
                 "com.android.server.wm.Task",
-                object : XC_MethodHook() {
-                    override fun beforeHookedMethod(param: MethodHookParam) {
-                        if (shouldRemoveTask(param.args[0])) {
-                            param.result = false
-                        }
-                    }
-                }
+                visibleRecentTaskHook
             )
+        }
+
+        // Vivo and some OEM ROMs call the two-arg overload directly from getRecentTasksImpl.
+        installHook("RecentTasks.isVisibleRecentTask(Task,boolean)") {
+            findAndHookMethod(
+                "com.android.server.wm.RecentTasks",
+                lpparam.classLoader,
+                "isVisibleRecentTask",
+                "com.android.server.wm.Task",
+                Boolean::class.javaPrimitiveType,
+                visibleRecentTaskHook
+            )
+        }
+
+        val snapshotModeHook = object : XC_MethodHook() {
+            override fun beforeHookedMethod(param: MethodHookParam) {
+                if (shouldHideTaskContent(param.args[0])) {
+                    param.result = SNAPSHOT_MODE_APP_THEME
+                }
+            }
         }
 
         installHook("TaskSnapshotController.getSnapshotMode") {
@@ -41,13 +63,18 @@ class MainHook : IXposedHookLoadPackage {
                 lpparam.classLoader,
                 "getSnapshotMode",
                 "com.android.server.wm.Task",
-                object : XC_MethodHook() {
-                    override fun beforeHookedMethod(param: MethodHookParam) {
-                        if (shouldHideTaskContent(param.args[0])) {
-                            param.result = SNAPSHOT_MODE_APP_THEME
-                        }
-                    }
-                }
+                snapshotModeHook
+            )
+        }
+
+        // getSnapshotMode may live on the parent class on some ROMs.
+        installHook("AbsAppSnapshotController.getSnapshotMode") {
+            findAndHookMethod(
+                "com.android.server.wm.AbsAppSnapshotController",
+                lpparam.classLoader,
+                "getSnapshotMode",
+                "com.android.server.wm.Task",
+                snapshotModeHook
             )
         }
 
@@ -90,8 +117,7 @@ class MainHook : IXposedHookLoadPackage {
             hookInstaller()
             XposedBridge.log("HideRecent: hook installed: $name")
         } catch (t: Throwable) {
-            XposedBridge.log("HideRecent: hook FAILED: $name")
-            XposedBridge.log(t)
+            XposedBridge.log("HideRecent: hook skipped ($name): ${t.message}")
         }
     }
 
