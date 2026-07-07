@@ -16,8 +16,8 @@ Designed with Kotlin, Jetpack Compose and Material Design 3. Can also serve as a
 
 1. Select `System framework` (package name may be `android` or `system` or empty, [see this](https://github.com/LSPosed/LSPosed/releases/tag/v1.9.1)) in module scope and activate the module
 2. Force stop the module
-3. Set a mode for each app in module settings: `No action`, `Hide task`, or `Hide preview` (if the package list is not shown, you can manually import / export settings to edit config)
-4. Reboot (you MUST reboot after modifying the list or the hide mode, otherwise the changes will not take effect)
+3. Set a mode for each app in module settings: `/`, `Hide task`, or `Hide preview` (if the package list is not shown, you can manually import / export settings to edit config)
+4. Reboot the device (you MUST reboot the device after modifying the list or the hide mode, otherwise the changes will not take effect)
 5. If you need multi-user support, install this module only in main user, and use [Shizuku](https://shizuku.rikka.app/download/) to get app info from other users.
 
 ## Module Scope
@@ -34,13 +34,13 @@ Xposed Modules Repo URL: <https://github.com/Xposed-Modules-Repo/moe.lyniko.hide
 
 UI: Material Design 3 + Jetpack Compose + Kotlin.
 
-Hook: Hook `com.android.server.wm.RecentTasks.isVisibleRecentTask(com.android.server.wm.Task)` for apps set to `Hide task`.
+Hook: Hook `com.android.server.wm.RecentTasks.isVisibleRecentTask(com.android.server.wm.Task)` and `com.android.server.wm.RecentTasks.isVisibleRecentTask(com.android.server.wm.Task, boolean)` for apps set to `Hide task`. The two-arg overload is used directly by Vivo and some other OEM ROMs.
 
-For apps set to `Hide preview`, hook `com.android.server.wm.TaskSnapshotController.getSnapshotMode(com.android.server.wm.Task)` and `com.android.server.wm.ActivityRecord.shouldUseAppThemeSnapshot()` so selected apps use an app-theme task snapshot instead of a real screenshot. `com.android.server.wm.Task.getSnapshot(boolean, boolean)` is also hooked to avoid returning previously cached real snapshots.
+For apps set to `Hide preview`, hook `com.android.server.wm.TaskSnapshotController.getSnapshotMode(com.android.server.wm.Task)`, `com.android.server.wm.AbsAppSnapshotController.getSnapshotMode(com.android.server.wm.Task)` (parent class on some ROMs), and `com.android.server.wm.ActivityRecord.shouldUseAppThemeSnapshot()` so selected apps use an app-theme task snapshot instead of a real screenshot. `com.android.server.wm.Task.getSnapshot(boolean, boolean)` is also hooked to avoid returning previously cached real snapshots.
 
 ## HELP ME IT DOESNT WORK!!!
 
-Please open a issue [here](https://github.com/Young-Lord/hideRecent/issues). Provide your Android version, `/system/framework/framework.jar`, `/system/framework/services.jar` and all `/system/framework/framework{a number here}.jar` if they exist.
+Please open an issue [here](https://github.com/Young-Lord/hideRecent/issues). Provide your Android version, `/system/framework/framework.jar`, `/system/framework/services.jar` and all `/system/framework/framework{a number here}.jar` if they exist.
 
 PR for refactoring is also appreciated.
 
