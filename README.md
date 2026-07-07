@@ -1,5 +1,9 @@
 # Hide App from Recent Task List
 
+**!!!LSPosed IS REQUIRED TO USE THIS MODULE!!!**
+
+**你需要先安装 LSPosed 才能使用这个模块！！！**
+
 Simple module to hide apps from the recent task list, or keep them visible while hiding their preview snapshots.
 
 Designed with Kotlin, Jetpack Compose and Material Design 3. Can also serve as a template for any Xposed module with an application selection list.
