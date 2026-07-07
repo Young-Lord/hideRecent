@@ -6,6 +6,7 @@ import de.robv.android.xposed.IXposedHookLoadPackage
 import de.robv.android.xposed.XC_MethodHook
 import de.robv.android.xposed.XposedBridge
 import de.robv.android.xposed.XSharedPreferences
+import de.robv.android.xposed.XC_MethodReplacement
 import de.robv.android.xposed.XposedHelpers.callMethod
 import de.robv.android.xposed.XposedHelpers.findAndHookMethod
 import de.robv.android.xposed.XposedHelpers.getObjectField
@@ -15,7 +16,21 @@ import moe.lyniko.hiderecent.utils.PreferenceUtils
 class MainHook : IXposedHookLoadPackage {
 
     override fun handleLoadPackage(lpparam: LoadPackageParam) {
-        if (lpparam.packageName == "android") onAppHooked(lpparam)
+        when (lpparam.packageName) {
+            BuildConfig.APPLICATION_ID -> hookSelf(lpparam)
+            "android" -> onAppHooked(lpparam)
+        }
+    }
+
+    private fun hookSelf(lpparam: LoadPackageParam) {
+        installHook("ModuleStatus.isActive") {
+            findAndHookMethod(
+                ModuleStatus::class.java.name,
+                lpparam.classLoader,
+                "isActive",
+                XC_MethodReplacement.returnConstant(true)
+            )
+        }
     }
 
     private fun onAppHooked(lpparam: LoadPackageParam) {

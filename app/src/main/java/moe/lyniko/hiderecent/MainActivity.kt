@@ -71,6 +71,19 @@ class MainActivity : ComponentActivity() {
                     Log.w(BuildConfig.APPLICATION_ID, "Wrong user id: $userId")
                 }
 
+                if (!ModuleStatus.isActive()) {
+                    LaunchedEffect(snackbarHostState) {
+                        scope.launch {
+                            snackbarHostState.showSnackbar(
+                                getString(R.string.not_activated),
+                                actionLabel = getString(R.string.dismiss_notification),
+                                duration = SnackbarDuration.Indefinite
+                            )
+                        }
+                    }
+                    Log.w(BuildConfig.APPLICATION_ID, "Module is not activated")
+                }
+
                 // check shizuku
                 if (isShizukuNeeded(this) && !isShizukuAvailable()) {
                     LaunchedEffect(snackbarHostState) {
