@@ -47,7 +47,10 @@ android {
 }
 
 dependencies {
-    compileOnly 'de.robv.android.xposed:api:82'
+    compileOnly 'io.github.libxposed:api:102.0.0'
+    // 102.0.0 requires compileSdk 37; the 101 service exposes the same
+    // remote-preferences API used here while staying compatible with compileSdk 36.
+    implementation 'io.github.libxposed:service:101.0.0'
 
     implementation 'org.lsposed.hiddenapibypass:hiddenapibypass:4.3'
     def shizuku_version = '13.1.5'

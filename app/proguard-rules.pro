@@ -19,6 +19,13 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
--keep class moe.lyniko.hiderecent.MainHook
+-dontwarn io.github.libxposed.annotation.**
+-adaptresourcefilecontents META-INF/xposed/java_init.list
+-keep,allowoptimization,allowobfuscation public class * extends io.github.libxposed.api.XposedModule {
+    public <init>();
+}
+-keepclassmembers class moe.lyniko.hiderecent.ModuleStatus {
+    public static boolean isActive();
+}
 # -keep class rikka.shizuku.SystemServiceHelper
 # -keep class android.** { *; }

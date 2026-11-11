@@ -2,152 +2,155 @@ package moe.lyniko.hiderecent
 
 import android.content.ComponentName
 import android.content.Intent
-import de.robv.android.xposed.IXposedHookLoadPackage
-import de.robv.android.xposed.XC_MethodHook
-import de.robv.android.xposed.XposedBridge
-import de.robv.android.xposed.XSharedPreferences
-import de.robv.android.xposed.XC_MethodReplacement
-import de.robv.android.xposed.XposedHelpers.callMethod
-import de.robv.android.xposed.XposedHelpers.findAndHookMethod
-import de.robv.android.xposed.XposedHelpers.getObjectField
-import de.robv.android.xposed.callbacks.XC_LoadPackage.LoadPackageParam
+import android.content.SharedPreferences
+import android.util.Log
+import io.github.libxposed.api.XposedInterface
+import io.github.libxposed.api.XposedModule
+import io.github.libxposed.api.XposedModuleInterface.PackageReadyParam
+import io.github.libxposed.api.XposedModuleInterface.SystemServerStartingParam
 import moe.lyniko.hiderecent.utils.PreferenceUtils
+import java.lang.reflect.Method
 
-class MainHook : IXposedHookLoadPackage {
+class MainHook : XposedModule() {
 
-    override fun handleLoadPackage(lpparam: LoadPackageParam) {
-        when (lpparam.packageName) {
-            BuildConfig.APPLICATION_ID -> hookSelf(lpparam)
-            "android" -> onAppHooked(lpparam)
+    override fun onPackageReady(param: PackageReadyParam) {
+        log(Log.INFO, TAG, "onPackageReady: ${param.packageName}")
+        if (param.packageName == BuildConfig.APPLICATION_ID) {
+            hookSelf()
         }
     }
 
-    private fun hookSelf(lpparam: LoadPackageParam) {
+    override fun onSystemServerStarting(param: SystemServerStartingParam) {
+        log(Log.INFO, TAG, "onSystemServerStarting")
+        hookSystemServer(param.classLoader)
+    }
+
+    private fun hookSelf() {
         installHook("ModuleStatus.isActive") {
-            findAndHookMethod(
-                ModuleStatus::class.java.name,
-                lpparam.classLoader,
-                "isActive",
-                XC_MethodReplacement.returnConstant(true)
-            )
+            val method = ModuleStatus::class.java.getDeclaredMethod("isActive")
+            hook(method).intercept { true }
         }
     }
 
-    private fun onAppHooked(lpparam: LoadPackageParam) {
-        val visibleRecentTaskHook = object : XC_MethodHook() {
-            override fun beforeHookedMethod(param: MethodHookParam) {
-                if (shouldRemoveTask(param.args[0])) {
-                    param.result = false
+    private fun hookSystemServer(classLoader: ClassLoader) {
+        val taskClass = findClass(classLoader, "com.android.server.wm.Task")
+        if (taskClass != null) {
+            installHook("RecentTasks.isVisibleRecentTask(Task)") {
+                hookMethod(
+                    classLoader,
+                    "com.android.server.wm.RecentTasks",
+                    "isVisibleRecentTask",
+                    arrayOf(taskClass)
+                ) { chain ->
+                    if (shouldRemoveTask(chain.args[0])) false else chain.proceed()
                 }
             }
-        }
 
-        installHook("RecentTasks.isVisibleRecentTask(Task)") {
-            findAndHookMethod(
-                "com.android.server.wm.RecentTasks",
-                lpparam.classLoader,
-                "isVisibleRecentTask",
-                "com.android.server.wm.Task",
-                visibleRecentTaskHook
-            )
-        }
-
-        // Vivo and some OEM ROMs call the two-arg overload directly from getRecentTasksImpl.
-        installHook("RecentTasks.isVisibleRecentTask(Task,boolean)") {
-            findAndHookMethod(
-                "com.android.server.wm.RecentTasks",
-                lpparam.classLoader,
-                "isVisibleRecentTask",
-                "com.android.server.wm.Task",
-                Boolean::class.javaPrimitiveType,
-                visibleRecentTaskHook
-            )
-        }
-
-        val snapshotModeHook = object : XC_MethodHook() {
-            override fun beforeHookedMethod(param: MethodHookParam) {
-                if (shouldHideTaskContent(param.args[0])) {
-                    param.result = SNAPSHOT_MODE_APP_THEME
+            // Vivo and some OEM ROMs call the two-arg overload directly from getRecentTasksImpl.
+            installHook("RecentTasks.isVisibleRecentTask(Task,boolean)") {
+                hookMethod(
+                    classLoader,
+                    "com.android.server.wm.RecentTasks",
+                    "isVisibleRecentTask",
+                    arrayOf(taskClass, Boolean::class.javaPrimitiveType!!)
+                ) { chain ->
+                    if (shouldRemoveTask(chain.args[0])) false else chain.proceed()
                 }
             }
-        }
 
-        installHook("TaskSnapshotController.getSnapshotMode") {
-            findAndHookMethod(
-                "com.android.server.wm.TaskSnapshotController",
-                lpparam.classLoader,
-                "getSnapshotMode",
-                "com.android.server.wm.Task",
-                snapshotModeHook
-            )
-        }
+            installHook("TaskSnapshotController.getSnapshotMode") {
+                hookMethod(
+                    classLoader,
+                    "com.android.server.wm.TaskSnapshotController",
+                    "getSnapshotMode",
+                    arrayOf(taskClass)
+                ) { chain ->
+                    if (shouldHideTaskContent(chain.args[0])) SNAPSHOT_MODE_APP_THEME else chain.proceed()
+                }
+            }
 
-        // getSnapshotMode may live on the parent class on some ROMs.
-        installHook("AbsAppSnapshotController.getSnapshotMode") {
-            findAndHookMethod(
-                "com.android.server.wm.AbsAppSnapshotController",
-                lpparam.classLoader,
-                "getSnapshotMode",
-                "com.android.server.wm.Task",
-                snapshotModeHook
-            )
+            // getSnapshotMode may live on the parent class on some ROMs.
+            installHook("AbsAppSnapshotController.getSnapshotMode") {
+                hookMethod(
+                    classLoader,
+                    "com.android.server.wm.AbsAppSnapshotController",
+                    "getSnapshotMode",
+                    arrayOf(taskClass)
+                ) { chain ->
+                    if (shouldHideTaskContent(chain.args[0])) SNAPSHOT_MODE_APP_THEME else chain.proceed()
+                }
+            }
+
+            installHook("Task.getSnapshot") {
+                hookMethod(
+                    classLoader,
+                    "com.android.server.wm.Task",
+                    "getSnapshot",
+                    arrayOf(Boolean::class.javaPrimitiveType!!, Boolean::class.javaPrimitiveType!!)
+                ) { chain ->
+                    val snapshot = chain.proceed()
+                    if (snapshot != null && shouldHideTaskContent(chain.thisObject) && isRealSnapshot(snapshot)) {
+                        null
+                    } else {
+                        snapshot
+                    }
+                }
+            }
         }
 
         installHook("ActivityRecord.shouldUseAppThemeSnapshot") {
-            findAndHookMethod(
+            hookMethod(
+                classLoader,
                 "com.android.server.wm.ActivityRecord",
-                lpparam.classLoader,
                 "shouldUseAppThemeSnapshot",
-                object : XC_MethodHook() {
-                    override fun beforeHookedMethod(param: MethodHookParam) {
-                        if (shouldHideActivityContent(param.thisObject)) {
-                            param.result = true
-                        }
-                    }
-                }
-            )
+                arrayOf()
+            ) { chain ->
+                if (shouldHideActivityContent(chain.thisObject)) true else chain.proceed()
+            }
         }
+    }
 
-        installHook("Task.getSnapshot") {
-            findAndHookMethod(
-                "com.android.server.wm.Task",
-                lpparam.classLoader,
-                "getSnapshot",
-                Boolean::class.javaPrimitiveType!!,
-                Boolean::class.javaPrimitiveType!!,
-                object : XC_MethodHook() {
-                    override fun afterHookedMethod(param: MethodHookParam) {
-                        val snapshot = param.result ?: return
-                        if (shouldHideTaskContent(param.thisObject) && isRealSnapshot(snapshot)) {
-                            param.result = null
-                        }
-                    }
-                }
-            )
+    private fun hookMethod(
+        classLoader: ClassLoader,
+        className: String,
+        methodName: String,
+        paramTypes: Array<Class<*>>,
+        hooker: XposedInterface.Hooker
+    ) {
+        val method: Method = Class.forName(className, false, classLoader)
+            .getDeclaredMethod(methodName, *paramTypes)
+        hook(method).intercept(hooker)
+    }
+
+    private fun findClass(classLoader: ClassLoader, className: String): Class<*>? {
+        return try {
+            Class.forName(className, false, classLoader)
+        } catch (_: Throwable) {
+            null
         }
     }
 
     private fun installHook(name: String, hookInstaller: () -> Unit) {
         try {
             hookInstaller()
-            XposedBridge.log("HideRecent: hook installed: $name")
+            log(Log.INFO, TAG, "hook installed: $name")
         } catch (t: Throwable) {
-            XposedBridge.log("HideRecent: hook skipped ($name): ${t.message}")
+            log(Log.WARN, TAG, "hook skipped ($name): ${t.message}")
         }
     }
 
     private fun shouldRemoveTask(taskObject: Any?): Boolean {
-        if (!loaded) tryLoadConfig()
+        ensureConfigLoaded()
         return isTaskHiddenPackage(packageNameFromTask(taskObject))
     }
 
     private fun shouldHideTaskContent(taskObject: Any?): Boolean {
-        if (!loaded) tryLoadConfig()
+        ensureConfigLoaded()
         return isContentHiddenPackage(packageNameFromTask(taskObject))
     }
 
     private fun shouldHideActivityContent(activityObject: Any?): Boolean {
-        if (!loaded) tryLoadConfig()
+        ensureConfigLoaded()
         return isContentHiddenPackage(packageNameFromActivityRecord(activityObject))
     }
 
@@ -162,43 +165,24 @@ class MainHook : IXposedHookLoadPackage {
     private fun packageNameFromTask(taskObject: Any?): String? {
         if (taskObject == null) return null
 
-        val baseIntent = tryOrNull {
-            callMethod(taskObject, "getBaseIntent") as? Intent
-        }
-        packageNameFromIntent(baseIntent)?.let { return it }
+        packageNameFromIntent(callMethod(taskObject, "getBaseIntent") as? Intent)?.let { return it }
+        packageNameFromIntent(getField(taskObject, "intent") as? Intent)?.let { return it }
 
-        val taskIntent = tryOrNull {
-            getObjectField(taskObject, "intent") as? Intent
-        }
-        packageNameFromIntent(taskIntent)?.let { return it }
-
-        val realActivity = tryOrNull {
-            getObjectField(taskObject, "realActivity") as? ComponentName
-        }
+        val realActivity = getField(taskObject, "realActivity") as? ComponentName
         realActivity?.packageName?.let { return it }
 
-        return tryOrNull {
-            getObjectField(taskObject, "mCallingPackage") as? String
-        }
+        return getField(taskObject, "mCallingPackage") as? String
     }
 
     private fun packageNameFromActivityRecord(activityObject: Any?): String? {
         if (activityObject == null) return null
 
-        val packageName = tryOrNull {
-            getObjectField(activityObject, "packageName") as? String
-        }
-        packageName?.let { return it }
+        (getField(activityObject, "packageName") as? String)?.let { return it }
 
-        val activityComponent = tryOrNull {
-            getObjectField(activityObject, "mActivityComponent") as? ComponentName
-        }
+        val activityComponent = getField(activityObject, "mActivityComponent") as? ComponentName
         activityComponent?.packageName?.let { return it }
 
-        val intent = tryOrNull {
-            getObjectField(activityObject, "intent") as? Intent
-        }
-        return packageNameFromIntent(intent)
+        return packageNameFromIntent(getField(activityObject, "intent") as? Intent)
     }
 
     private fun packageNameFromIntent(intent: Intent?): String? {
@@ -206,45 +190,71 @@ class MainHook : IXposedHookLoadPackage {
     }
 
     private fun isRealSnapshot(snapshot: Any): Boolean {
-        return tryOrNull {
-            callMethod(snapshot, "isRealSnapshot") as? Boolean
-        } ?: true
+        return callMethod(snapshot, "isRealSnapshot") as? Boolean ?: true
     }
 
-    private inline fun <T> tryOrNull(block: () -> T): T? {
-        return try {
-            block()
-        } catch (_: Throwable) {
-            null
+    private fun callMethod(target: Any, methodName: String): Any? {
+        var clazz: Class<*>? = target.javaClass
+        while (clazz != null) {
+            try {
+                val method = clazz.getDeclaredMethod(methodName)
+                method.isAccessible = true
+                return method.invoke(target)
+            } catch (_: Throwable) {
+                clazz = clazz.superclass
+            }
         }
+        return null
+    }
+
+    private fun getField(target: Any, fieldName: String): Any? {
+        var clazz: Class<*>? = target.javaClass
+        while (clazz != null) {
+            try {
+                val field = clazz.getDeclaredField(fieldName)
+                field.isAccessible = true
+                return field.get(target)
+            } catch (_: Throwable) {
+                clazz = clazz.superclass
+            }
+        }
+        return null
     }
 
     @Volatile
     private var taskHiddenPackages: Set<String> = emptySet()
+
     @Volatile
     private var contentHiddenPackages: Set<String> = emptySet()
+
     @Volatile
     private var loaded = false
 
-    private fun tryLoadConfig() {
-        val packagePref = XSharedPreferences(BuildConfig.APPLICATION_ID, PreferenceUtils.functionalConfigName)
-        packagePref.makeWorldReadable()
-        val hiddenTasks = PreferenceUtils.getPackageListFromPref(packagePref)
-        val hiddenContents = PreferenceUtils.getContentHiddenPackageListFromPref(packagePref)
-        hiddenContents.removeAll(hiddenTasks)
-        taskHiddenPackages = hiddenTasks
-        contentHiddenPackages = hiddenContents
+    private var remotePrefs: SharedPreferences? = null
 
-        if (hiddenTasks.isNotEmpty() || hiddenContents.isNotEmpty()) {
+    private fun ensureConfigLoaded() {
+        if (!loaded) tryLoadConfig()
+    }
+
+    private fun tryLoadConfig() {
+        try {
+            val pref = remotePrefs ?: getRemotePreferences(PreferenceUtils.functionalConfigName).also {
+                remotePrefs = it
+                it.registerOnSharedPreferenceChangeListener { _, _ -> loaded = false }
+            }
+            val hiddenTasks = PreferenceUtils.getPackageListFromPref(pref)
+            val hiddenContents = PreferenceUtils.getContentHiddenPackageListFromPref(pref)
+            hiddenContents.removeAll(hiddenTasks)
+            taskHiddenPackages = hiddenTasks
+            contentHiddenPackages = hiddenContents
             loaded = true
+        } catch (t: Throwable) {
+            log(Log.WARN, TAG, "failed to load config: ${t.message}")
         }
     }
 
     companion object {
+        private const val TAG = "HideRecent"
         private const val SNAPSHOT_MODE_APP_THEME = 1
-    }
-
-    init {
-        tryLoadConfig()
     }
 }

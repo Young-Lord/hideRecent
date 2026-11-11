@@ -1,23 +1,21 @@
 package moe.lyniko.hiderecent.utils
 
-import android.annotation.SuppressLint
 import android.content.Context
 import android.content.SharedPreferences
+import android.util.Log
+import io.github.libxposed.service.XposedService
 import moe.lyniko.hiderecent.MyApplication
 import moe.lyniko.hiderecent.R
 
-@SuppressLint("WorldReadableFiles")
 class PreferenceUtils( // init context on constructor
     context: Context
 ) {
     // ------ 1. get several SharedPreferences ------
-    // Vector/LSPosed hooks checkMode to allow MODE_WORLD_READABLE when the module
-    // is in its own scope. Fall back to MODE_PRIVATE if the hook isn't active.
-    private var funcPref: SharedPreferences = openWorldReadable(context, functionalConfigName)
+    private var funcPref: SharedPreferences = openPrivate(context, functionalConfigName)
 
-    var managerPref: SharedPreferences = openWorldReadable(context, managerConfigName)
+    var managerPref: SharedPreferences = openPrivate(context, managerConfigName)
 
-    private val legacyFuncPref = openWorldReadable(context, legacyConfigName)
+    private val legacyFuncPref = openPrivate(context, legacyConfigName)
     
     // ------ 2. init packages ------
     private fun initPackageFromLegacyAndNew(funcPref: SharedPreferences, legacyPref: SharedPreferences) {
@@ -68,13 +66,8 @@ class PreferenceUtils( // init context on constructor
                 instance ?: PreferenceUtils(context).also { instance = it }
             }
 
-        @Suppress("DEPRECATION")
-        private fun openWorldReadable(context: Context, name: String): SharedPreferences {
-            return try {
-                context.getSharedPreferences(name, Context.MODE_WORLD_READABLE)
-            } catch (_: SecurityException) {
-                context.getSharedPreferences(name, Context.MODE_PRIVATE)
-            }
+        private fun openPrivate(context: Context, name: String): SharedPreferences {
+            return context.getSharedPreferences(name, Context.MODE_PRIVATE)
         }
 
         private const val packagesTag = "packages"
@@ -101,11 +94,32 @@ class PreferenceUtils( // init context on constructor
     }
 
 
+    @Volatile
+    private var remoteService: XposedService? = null
+
+    fun attachRemoteService(service: XposedService?) {
+        remoteService = service
+        if (service != null) syncToRemote()
+    }
+
+    private fun syncToRemote() {
+        val service = remoteService ?: return
+        try {
+            service.getRemotePreferences(functionalConfigName).edit()
+                .putStringSet(packagesTag, packages)
+                .putStringSet(contentHiddenPackagesTag, contentHiddenPackages)
+                .apply()
+        } catch (t: Throwable) {
+            Log.w("PreferenceUtils", "Failed to sync preferences to Xposed framework", t)
+        }
+    }
+
     private fun commitPackageList() {
         funcPref.edit()
             .putStringSet(packagesTag, packages)
             .putStringSet(contentHiddenPackagesTag, contentHiddenPackages)
             .apply()
+        syncToRemote()
     }
 
     fun addPackage(pkg: String): Int {
